@@ -1,0 +1,53 @@
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="header-container">
+    <img src="/imagesS/logo.png" alt="Team Logo" class="team-logo">
+    <div class="header-title">Nos Medicaments disponibles </div>
+</div>
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+    <h1>Tableau de bord</h1>
+
+    <h2>Médicaments à faible stock</h2>
+    <ul>
+        {% for medicament in medicamentsLowStock %}
+            <li>{{ medicament.nom_medicament }} (Stock restant: {{ medicament.quantite_stock }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Médicaments les plus demandés</h2>
+    <ul>
+        {% for medicament in mostOrderedMedicaments %}
+            <li>{{ medicament[0].nom_medicament }} (Commandé {{ medicament.orders_count }} fois)</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+<canvas id="stockChart" width="400" height="200"></canvas>
+
+<script>
+    var ctx = document.getElementById('stockChart').getContext('2d');
+    var stockChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for medicament in mostOrderedMedicaments %} '{{ medicament[0].nom_medicament }}', {% endfor %}],
+            datasets: [{
+                label: 'Médicaments les plus demandés',
+                data: [{% for medicament in mostOrderedMedicaments %} {{ medicament.orders_count }}, {% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+

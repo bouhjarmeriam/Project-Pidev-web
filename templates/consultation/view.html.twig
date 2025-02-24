@@ -1,0 +1,90 @@
+ {# templates/consultation/view.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Consultations{% endblock %}
+
+{% block body %}
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8B0000, #4682B4); /* Dark red and steel blue gradient */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+        }
+
+        h1 {
+            color: #2d4b61; /* Dark blue */
+            text-align: center;
+        }
+
+        /* Form and list styling */
+        ul {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            list-style-type: none;
+        }
+
+        li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        strong {
+            color: #2d4b61; /* Dark blue for text emphasis */
+        }
+
+        a {
+            color: #0099cc; /* Cool blue for links */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #0077b3; /* Darker blue on hover */
+        }
+
+        /* No consultations found */
+        p {
+            text-align: center;
+            color: #ff4d4d; /* Red color for alert */
+            font-weight: bold;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            ul {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+    </style>
+
+    <h1>Consultations for {{ patientIdentifier }}</h1>
+
+    {% if consultations is empty %}
+        <p>No consultations found for this patient.</p>
+    {% else %}
+        <ul>
+            {% for consultation in consultations %}
+                <li>
+                    <strong>Service:</strong> {{ consultation.service.name }}<br>
+                    <strong>Date:</strong> {{ consultation.date|date('Y-m-d H:i') }}<br>
+                    <a href="{{ path('app_edit_consultation', { id: consultation.id }) }}">Edit</a> |
+                    <a href="{{ path('app_delete_consultation', { id: consultation.id }) }}" onclick="return confirm('Are you sure you want to delete this consultation?')">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

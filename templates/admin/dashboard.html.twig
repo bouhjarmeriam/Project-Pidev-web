@@ -1,0 +1,67 @@
+ {# templates/admin/dashboard.html.twig #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="{{ asset('css1/admin.css') }}" rel="stylesheet">
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #F0F0F0;">
+
+    <div class="admin-container" style="display: flex; min-height: 100vh;">
+        <div class="sidebar">
+            <h3>Admin Menu</h3>
+            <ul>
+                <li><a href="{{ path('admin_home') }}">Dashboard</a></li>
+                <li><a href="{{ path('admin_users') }}">Utilisateurs</a></li>
+                <li><a href="{{ path('admin_services') }}">Services</a></li>
+                <li><a href="{{ path('admin_equipment') }}">Equipements</a></li>
+                <li><a href="{{ path('admin_infrastructure') }}">Infrastructure</a></li>
+                <li><a href="{{ path('admin_medical_records') }}">Dossiers Medicals</a></li>
+                <li><a href="{{ path('admin_medication_stock') }}"> Stock Medicaments</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <h1>Welcome to the Admin Dashboard</h1>
+            <p style="color: #00A9E0;">Manage the hospital services and operations here.</p>
+
+            <!-- Task Sections -->
+            <div class="task-sections">
+                <div class="task-card" style="background-color: #00A9E0; color: white;">
+                    <h3>Utilisateurs</h3>
+                    <p>Manage hospital staff and users</p>
+                    <a href="{{ path('admin_users') }}">Go to Users</a>
+                </div>
+                <div class="task-card" style="background-color: #00A9E0; color: white;">
+                    <h3>Services</h3>
+                    <p>Manage hospital services</p>
+                    <a href="{{ path('admin_services') }}">Go to Services</a>
+                </div>
+                <div class="task-card" style="background-color: #003B5C; color: white;">
+                    <h3>Equipements</h3>
+                    <p>Manage hospital equipment</p>
+                    <a href="{{ path('admin_equipment') }}">Go to Equipment</a>
+                </div>
+                <div class="task-card" style="background-color: #00A9E0; color: white;">
+                    <h3>Infrastructure</h3>
+                    <p>Manage hospital infrastructure</p>
+                    <a href="{{ path('admin_infrastructure') }}">Go to Infrastructure</a>
+                </div>
+                <div class="task-card" style="background-color: #003B5C; color: white;">
+                    <h3>Dossiers Medicals</h3>
+                    <p>Manage patient medical records</p>
+                    <a href="{{ path('admin_medical_records') }}">Go to Medical Records</a>
+                </div>
+                <div class="task-card" style="background-color: #003B5C; color: white;">
+                    <h3> Stock Medicament</h3>
+                    <p>Manage medication stock</p>
+                    <a href="{{ path('app_medicament_new') }}">Go to Medication Stock</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

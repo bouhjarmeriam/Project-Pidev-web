@@ -1,0 +1,178 @@
+
+
+{% block body %}
+<div class="edit-container">
+    <h2 class="edit-title">📝 Modifier la Commande</h2>
+
+   
+
+    {% for flash in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ flash }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form, {'attr': {'class': 'edit-form needs-validation', 'novalidate': 'novalidate'}}) }}
+
+    <div class="form-group">
+        {{ form_label(form.dateCommande, 'Date de la Commande') }}
+        {{ form_widget(form.dateCommande, {'attr': {'class': 'form-control', 'type': 'date'}}) }}
+        {{ form_errors(form.dateCommande) }}
+        <div class="invalid-feedback">La date de commande est requise.</div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.quantite, 'Quantité') }}
+        {{ form_widget(form.quantite, {'attr': {'class': 'form-control', 'type': 'number', 'min': '1'}}) }}
+        {{ form_errors(form.quantite) }}
+        <div class="invalid-feedback">La quantité doit être un nombre positif.</div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.medicaments, 'Médicaments') }}
+        {{ form_widget(form.medicaments, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.medicaments) }}
+        <div class="invalid-feedback">Veuillez sélectionner au moins un médicament.</div>
+    </div>
+
+    <!-- ✅ Buttons -->
+    <div class="form-buttons">
+        <button type="submit" class="btn btn-save">💾 Sauvegarder</button>
+        <a href="{{ path('app_command_list') }}" class="btn btn-cancel">❌ Annuler</a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+
+<!-- ✅ JavaScript Validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+
+        form.querySelectorAll('.form-control').forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+
+    form.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
+
+<!-- ✅ Improved Styles -->
+<style>
+    .edit-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-save {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-save:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-cancel {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background-color: #c82333;
+    }
+
+    .invalid-feedback {
+        display: none;
+        color: red;
+        font-size: 12px;
+    }
+
+    .is-invalid + .invalid-feedback {
+        display: block;
+    }
+</style>
+
+{% endblock %}

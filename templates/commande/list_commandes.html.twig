@@ -1,0 +1,215 @@
+<div class="table-container">
+    <h1 class="table-title">Liste des Commandes</h1>
+
+    <!-- ✅ Search Bar -->
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Rechercher une commande..." class="search-bar">
+
+    <!-- ✅ Add New Commande Button -->
+    <div class="add-service-button">
+        <a href="{{ path('app_commande_new') }}" class="btn btn-add">+ Ajouter une Commande</a>
+    </div>
+
+    <!-- ✅ Commandes Table -->
+    <table class="services-table" id="commandeTable">
+        <thead>
+            <tr>
+                
+                <th>Date</th>
+                <th>Médicaments</th>
+                <th>Quantité</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for commande in commandes|sort((a, b) => a.dateCommande <=> b.dateCommande) %}
+                <tr>
+                    ²²²²²²²²²²²²²²²²²²²²²²²
+                    <td>{{ commande.dateCommande|date('d-m-Y') }}</td>
+                    <td>
+                        {% for medicament in commande.medicaments %}
+                            {{ medicament.nomMedicament }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ commande.quantite }}</td>
+                    <td class="actions">
+                        <a href="{{ path('app_commande_edit', {'id': commande.id}) }}" class="btn btn-edit">Modifier</a>
+                        <form action="{{ path('app_commande_delete', {'id': commande.id}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer cette commande ?');">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="no-data">Aucune commande trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ✅ Improved Styles for Better UI/UX -->
+<style>
+    /* Container */
+    .table-container {
+        max-width: 95%;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Title */
+    .table-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Add Button */
+    .add-service-button {
+        text-align: right;
+        margin-bottom: 15px;
+    }
+
+    .btn-add {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-add:hover {
+        background-color: #218838;
+    }
+
+    /* Table */
+    .services-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .services-table th, .services-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .services-table th {
+        background-color: #007bff;
+        color: white;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
+    .services-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .services-table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-edit {
+        background-color: #007bff;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-edit:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-delete:hover {
+        background-color: #c0392b;
+    }
+
+    /* No Data */
+    .no-data {
+        text-align: center;
+        font-size: 16px;
+        color: #888;
+        padding: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .table-container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        .table-title {
+            font-size: 22px;
+        }
+
+        .services-table th, .services-table td {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .btn {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<!-- ✅ Improved Search Functionality -->
+<script>
+    function filterTable() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toLowerCase();
+        let table = document.getElementById("commandeTable");
+        let tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            let cells = tr[i].getElementsByTagName("td");
+            let rowText = "";
+
+            for (let j = 0; j < cells.length - 1; j++) {
+                rowText += cells[j].textContent.toLowerCase();
+            }
+
+            tr[i].style.display = rowText.includes(filter) ? "" : "none";
+        }
+    }
+</script>

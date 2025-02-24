@@ -1,0 +1,40 @@
+ {% extends 'base.html.twig' %}
+
+{% block title %}Services Management{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Manage Services</h1>
+        <a href="{{ path('app_service_new') }}" class="btn btn-primary mb-3">Add New Service</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                    <tr>
+                        <td>{{ service.name }}</td>
+                        <td>{{ service.description }}</td>
+                        <td>{{ service.price }}</td>
+                        <td>
+                            <a href="{{ path('app_service_edit', {id: service.id}) }}" class="btn btn-warning">Edit</a>
+                            <form action="{{ path('app_service_delete', {id: service.id}) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No services found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface de recherche</title>
+    <link rel="stylesheet" href="{{ asset('styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" placeholder="Search and buy near you">
+        </div>
+        <div class="categories">
+            {% for cat in ['General', 'Skin & Hair', 'Child Care', 'Woman Health', 'Dentist', 'ENT', 'Homeopathy', 'Vitamins'] %}
+                <a href="{{ path('category_medicaments', {'category': cat}) }}" class="category">
+                    <img src="{{ asset('images/categories/' ~ cat ~ '.jpg') }}" alt="{{ cat }}">
+                    <span>{{ cat }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
+/* public/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.categories a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.category {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    width: 150px;
+}
+
+.category img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.category span {
+    display: block;
+    margin-top: 10px;
+}
+
+.medicaments-list {
+    margin-top: 20px;
+}
+
+.medicament-item {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.medicament-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.medicament-details {
+    flex: 1;
+}
+
+.medicament-details h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.medicament-details p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

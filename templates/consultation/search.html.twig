@@ -1,0 +1,101 @@
+ {# templates/consultation/search.html.twig #}
+
+{% block title %}Search Consultation{% endblock %}
+
+{% block body %}
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8B0000, #4682B4); /* Dark red and steel blue gradient */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+        }
+
+        h1 {
+            color: #2d4b61; /* Dark blue */
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* Form styling */
+        form {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: #2d4b61; /* Dark blue for labels */
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="submit"], button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #e3e3e3;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: #fafafa;
+        }
+
+        input[type="submit"] {
+            background-color: #0099cc; /* Cool blue */
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0077b3; /* Darker blue on hover */
+        }
+
+        /* Alert box */
+        .alert-danger {
+            color: #fff;
+            background-color: #ff4d4d; /* Red color for alert */
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+    </style>
+
+    <h1>Search Consultation</h1>
+
+    <form method="POST" action="{{ path('app_search_consultation') }}">
+        {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.patientIdentifier) }}
+            {{ form_widget(form.patientIdentifier) }}
+        </div>
+        <div class="form-group">
+            {{ form_widget(form.search) }}
+        </div>
+        {{ form_end(form) }}
+    </form>
+
+    {% if app.session.flashbag.has('error') %}
+        <div class="alert alert-danger">
+            {{ app.session.flashbag.get('error')[0] }}
+        </div>
+    {% endif %}
+{% endblock %}

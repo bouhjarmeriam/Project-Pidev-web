@@ -1,0 +1,164 @@
+ {% extends 'base.html.twig' %}
+
+{% block title %}New Consultation{% endblock %}
+
+{% block body %}
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8B0000, #4682B4); /* Dark red and steel blue gradient */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+        }
+
+        h1, h2, h3 {
+            color: #2d4b61; /* Dark blue */
+            text-align: center;
+        }
+
+        /* Add logo at the top */
+        .logo-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo-container img {
+            width: 150px; /* Adjust logo size */
+            height: auto;
+        }
+
+        /* Form and fieldset styling */
+        form {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        fieldset {
+            border: 2px solid #ff4d4d; /* Soft red border */
+            border-radius: 10px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+        }
+
+        legend {
+            font-size: 1.2em;
+            color: #ff4d4d; /* Red for consistency */
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #e3e3e3;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: #fafafa;
+        }
+
+        button {
+            background-color: #0099cc; /* Cool blue */
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0077b3; /* Darker blue on hover */
+        }
+
+        /* Available services section */
+        div {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        strong {
+            color: #2d4b61; /* Dark blue for text emphasis */
+        }
+
+        /* Service details */
+        ul li span {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+    </style>
+
+    <!-- Team Logo -->
+    <div class="logo-container">
+        <img src="imagesS/logo.png" alt="Team Logo">
+    </div>
+
+    <h1>Create a Consultation</h1>
+
+    <!-- SEARCH FORM -->
+    <fieldset>
+        <legend>Search Your Consultations</legend>
+        <form action="{{ path('app_search_consultation') }}" method="POST">
+            <input type="text" name="patientIdentifier" placeholder="Enter your patient ID" required>
+            <button type="submit">Search</button>
+        </form>
+    </fieldset>
+    
+    <hr>
+
+    <!-- AVAILABLE SERVICES -->
+    <div>
+        <h2>Available Services</h2>
+        <ul>
+            {% for service in services %}
+                <li>
+                    <strong>{{ service.name }}</strong><br>
+                    <strong>Description:</strong> {{ service.description }}<br>
+                    <strong>Price:</strong> ${{ service.price }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <h3>Select a Service and Schedule the Consultation</h3>
+    {{ form_start(form) }}
+        {{ form_row(form.service) }}
+        {{ form_row(form.date) }}
+        {{ form_row(form.patientIdentifier) }}
+        <button type="submit">Create Consultation</button>
+    {{ form_end(form) }}
+{% endblock %}

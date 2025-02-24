@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Medicament{% endblock %}
+
+{% block body %}
+    <h1>Medicament</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ medicament.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom_medicament</th>
+                <td>{{ medicament.nomMedicament }}</td>
+            </tr>
+            <tr>
+                <th>Description_medicament</th>
+                <td>{{ medicament.descriptionMedicament }}</td>
+            </tr>
+            <tr>
+                <th>Type_medicament</th>
+                <td>{{ medicament.typeMedicament }}</td>
+            </tr>
+            <tr>
+                <th>Prix_medicament</th>
+                <td>{{ medicament.prixMedicament }}</td>
+            </tr>
+            <tr>
+                <th>Quantite_stock</th>
+                <td>{{ medicament.quantiteStock }}</td>
+            </tr>
+            <tr>
+                <th>Date_entree</th>
+                <td>{{ medicament.dateEntree ? medicament.dateEntree|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_expiration</th>
+                <td>{{ medicament.dateExpiration ? medicament.dateExpiration|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Image_medicament</th>
+                <td>{{ medicament.imageMedicament }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_medicament_index') }}">back to list</a>
+
+    <a href="{{ path('app_medicament_edit', {'id': medicament.id}) }}">edit</a>
+
+    {{ include('medicament/_delete_form.html.twig') }}
+{% endblock %}

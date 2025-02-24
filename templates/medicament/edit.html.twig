@@ -1,0 +1,156 @@
+
+{% block title %}Modifier Médicament{% endblock %}
+
+{% block body %}
+<div class="edit-container">
+    <h2 class="edit-title">📝 Modifier le Médicament</h2>
+
+
+    {% for flash in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ flash }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
+
+    <div class="form-group">
+        {{ form_label(form.nomMedicament, 'Nom du Médicament') }}
+        {{ form_widget(form.nomMedicament, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.nomMedicament) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.descriptionMedicament, 'Description') }}
+        {{ form_widget(form.descriptionMedicament, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.descriptionMedicament) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.typeMedicament, 'Type') }}
+        {{ form_widget(form.typeMedicament, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.typeMedicament) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.prixMedicament, 'Prix (€)') }}
+        {{ form_widget(form.prixMedicament, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.prixMedicament) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.quantiteStock, 'Quantité en Stock') }}
+        {{ form_widget(form.quantiteStock, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.quantiteStock) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.dateEntree, 'Date d’Entrée') }}
+        {{ form_widget(form.dateEntree, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateEntree) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.dateExpiration, 'Date d’Expiration') }}
+        {{ form_widget(form.dateExpiration, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateExpiration) }}
+    </div>
+
+    <!-- ✅ Buttons -->
+    <div class="form-buttons">
+        <button type="submit" class="btn btn-save">💾 Sauvegarder</button>
+        <a href="{{ path('app_medicament_index') }}" class="btn btn-cancel">❌ Annuler</a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+
+<!-- ✅ Improved Styles -->
+<style>
+    .edit-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-save:hover {
+        background-color: #218838;
+    }
+
+    .btn-cancel {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background-color: #c82333;
+    }
+</style>
+
+{% endblock %}

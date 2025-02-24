@@ -1,0 +1,77 @@
+ {% extends 'base.html.twig' %}
+
+{% block title %}Consultation Confirmation{% endblock %}
+
+{% block body %}
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8B0000, #00008B); /* Dark red to dark blue gradient */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        a {
+            display: inline-block;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            text-decoration: none;
+            font-size: 1em;
+            margin-top: 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Styling for message box */
+        .message-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+            text-align: center;
+            width: 50%;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .message-box {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <div class="message-box">
+        <h1>Consultation Confirmed</h1>
+        <p>The consultation for patient with identifier "{{ patientIdentifier }}" has been successfully created.</p>
+        <a href="{{ path('app_patient_consultations', { 'patientIdentifier': patientIdentifier }) }}">View Consultations</a>
+    </div>
+
+{% endblock %}
+
+{% block footer %}{% endblock %} {# This ensures NO FOOTER appears #}

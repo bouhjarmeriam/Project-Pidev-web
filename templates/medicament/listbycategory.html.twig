@@ -1,0 +1,7 @@
+<h1>Liste des médicaments pour : {{ description }}</h1>
+
+<ul>
+    {% for medicament in medicaments %}
+        <li>{{ medicament.nom_medicament }} - {{ medicament.description_medicament }}</li>
+    {% endfor %}
+</ul>
