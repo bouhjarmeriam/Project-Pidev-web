@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Pharmacien{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: #F0F0F0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: #003a5d;
+            color: white;
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #005a8d;
+            text-decoration: underline;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 270px;
+            padding: 40px 20px;
+            background-color: #c2e1f5; /* Bleu clair */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .main-content h1 {
+            color: #003a5d;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .main-content p {
+            color: #005a8d;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* Task Sections */
+        .task-sections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: flex-start;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        .task-card {
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            transition: 0.3s;
+            width: 300px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .task-card:hover {
+            transform: scale(1.05);
+        }
+
+        .task-card h3 {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .task-card p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .blue-card {
+            background-color: #00a3e0;
+        }
+
+        .dark-blue-card {
+            background-color: #003a5d;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .task-sections {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .task-card {
+                width: 90%;
+                max-width: 350px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="pharmacien-container" style="display: flex; min-height: 100vh;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Menu Pharmacien</h3>
+        <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Stocks Médicaments</a></li>
+            <li><a href="#">Validation Ordonnances</a></li>
+            <li><a href="#">Livraisons</a></li>
+            <li><a href="#">Historique des Stocks</a></li>
+            <li><a href="#">Profil</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Bienvenue sur votre espace Pharmacien</h1>
+        <p>Gestion des stocks et validation des ordonnances.</p>
+
+        <!-- Task Sections -->
+        <div class="task-sections">
+            <div class="task-card blue-card">
+                <h3>Stocks Médicaments</h3>
+                <p>Consulter et gérer les stocks de médicaments</p>
+            </div>
+            <div class="task-card blue-card">
+                <h3>Validation Ordonnances</h3>
+                <p>Valider les ordonnances des médecins</p>
+            </div>
+            <div class="task-card dark-blue-card">
+                <h3>Livraisons</h3>
+                <p>Gérer les livraisons de médicaments</p>
+            </div>
+            <div class="task-card blue-card">
+                <h3>Historique des Stocks</h3>
+                <p>Consulter l'historique des stocks</p>
+            </div>
+            <div class="task-card dark-blue-card">
+                <h3>Profil</h3>
+                <p>Modifier vos informations personnelles</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

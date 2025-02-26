@@ -1,9 +1,78 @@
-{# templates/admin/users.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Users Management{% endblock %}
+{% block title %}Gestion des Utilisateurs{% endblock %}
 
 {% block body %}
-    <h1>Manage Users</h1>
-    <p>This is where you can manage all users in the hospital system.</p>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📋 Liste des Utilisateurs</h1>
+
+    <div class="row">
+        <!-- Liste des utilisateurs -->
+        <div class="col-md-10">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover table-lg align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th class="p-3">id</th>
+                            <th class="p-3">👤 Nom</th>
+                            <th class="p-3">👤 Prénom</th>
+                            <th class="p-3">✉ Email</th>
+                            <th class="p-3">🔑 Rôles</th>
+                            <th class="p-3">📌 Type</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Séparation avant la première ligne -->
+                        <tr><td colspan="7" class="p-0"><hr class="my-4"></td></tr>
+                        
+                        {% for user in users %}
+                            <tr>
+                                <td class="text-center p-3">{{ user.id }}</td>
+                                <td class="p-3">{{ user.nom | capitalize }}</td>
+                                <td class="p-3">{{ user.prenom | capitalize }}</td>
+                                <td class="p-3">{{ user.email }}</td>
+                                <td class="text-center p-3">
+                                    {% for role in user.roles %}
+                                        <span class="badge bg-success px-3 py-2">{{ role }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-center p-3">
+                                    {% if user.getType is defined %}
+                                        <span class="badge bg-warning px-3 py-2 text-dark">{{ user.getType() }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary px-3 py-2">Non défini</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center p-3">
+                                    <!-- Formulaire pour Modifier -->
+                                    <form action="{{ path('user_edit', { 'id': user.id }) }}" method="GET" style="display:inline;">
+                                        <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+                                    </form>
+                                 
+                                    <!-- Formulaire pour Supprimer -->
+                                    <form action="{{ path('user_delete', { 'id': user.id }) }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-danger btn-sm ml-2">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <!-- Séparation après chaque utilisateur -->
+                            <tr><td colspan="7" class="p-0"><hr class="my-4"></td></tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted p-4">Aucun utilisateur trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bouton Ajouter utilisateur -->
+        <div class="col-md-2 d-flex align-items-start justify-content-end">
+            <a href="{{ path('user_create') }}" class="btn btn-success btn-lg">Ajouter un utilisateur</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

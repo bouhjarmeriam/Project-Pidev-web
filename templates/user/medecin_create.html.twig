@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Créer un medecin</h1>
+
+    {{ form_start(form,{'attr': {'novalidate': 'novalidate', 'class': 'needs-validation'}}) }}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}

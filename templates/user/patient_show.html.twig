@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Patient{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📋 Détails du Patient</h1>
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ patient.nom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ patient.prenom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ patient.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de naissance</th>
+                        <td>{{ patient.dateNaissance|date('d/m/Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adresse</th>
+                        <td>{{ patient.adresse }}</td>
+                    </tr>
+                    <!-- Ajoutez d'autres informations spécifiques ici -->
+                </tbody>
+            </table>
+
+            <a href="{{ path('admin_users') }}" class="btn btn-secondary btn-lg">Retour</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

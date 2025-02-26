@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un utilisateur{% endblock %}
+
+{% block body %}
+    <h1 class="text-center my-4"> 📝 Modifier l'utilisateur</h1>
+
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            min-width: 140px;
+            font-weight: bold;
+            text-align: left;
+            color: #333;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+
+        .form-group input,
+        .form-group select {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            width: 100%;
+            background: #fff;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2 class="text-center">Modifier un utilisateur</h2>
+        
+        {{ form_start(form,{'attr': {'novalidate': 'novalidate', 'class': 'needs-validation'}}) }}
+        
+            <div class="form-group">
+                <label for="{{ form.nom.vars.id }}">{{ form_label(form.nom) }}</label>
+                {{ form_widget(form.nom) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.prenom.vars.id }}">{{ form_label(form.prenom) }}</label>
+                {{ form_widget(form.prenom) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.vars.id }}">{{ form_label(form.email) }}</label>
+                {{ form_widget(form.email) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.vars.id }}">{{ form_label(form.password) }}</label>
+                {{ form_widget(form.password) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.type.vars.id }}">{{ form_label(form.type) }}</label>
+                {{ form_widget(form.type) }}
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn-primary">  Enregistrer</button>
+                <a href="{{ path('admin_users') }}" class="btn-secondary">  Annuler</a>
+            </div>
+        
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
