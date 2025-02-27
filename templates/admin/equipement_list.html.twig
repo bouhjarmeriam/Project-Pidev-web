@@ -1,0 +1,17 @@
+{# templates/admin/equipement_list.html.twig #}
+
+<h1>Tous les équipements</h1>
+
+<ul>
+    {% for equipement in equipements %}
+        <li>
+            <strong>{{ equipement.nom }}</strong> - 
+            <em>{{ equipement.type }}</em> - 
+            <span>{{ equipement.category }}</span>
+            <a href="{{ path('delete_equipement', {'category': equipement.category, 'id': equipement.id}) }}" 
+               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')">Supprimer</a>
+        </li>
+    {% else %}
+        <p>Aucun équipement trouvé.</p>
+    {% endfor %}
+</ul>

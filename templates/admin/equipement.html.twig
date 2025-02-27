@@ -1,0 +1,27 @@
+{# templates/admin/equipement.html.twig #}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Équipements</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #F0F0F0;">
+
+    <div class="main-content">
+        <h1>Gestion des Équipements</h1>
+        <p style="color: #00A9E0;">Gérer les équipements de l'hôpital ici.</p>
+
+        <div class="task-sections">
+            {% for category in categories %}
+                <div class="task-card" style="background-color: #00A9E0; color: white; margin-bottom: 15px;">
+                    <h3>{{ category }}</h3>
+                    <a href="{{ path('admin_equipment_category', { 'category': category }) }}">Voir les détails</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

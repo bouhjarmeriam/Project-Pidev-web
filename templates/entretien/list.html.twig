@@ -1,0 +1,94 @@
+{# templates/entretien/list.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des entretiens{% endblock %}
+
+{% block body %}
+    <h1>Liste des entretiens</h1>
+
+    <style>
+        /* Style pour le container de la liste */
+        .entretien-list {
+            list-style-type: none; /* Supprimer les puces */
+            padding: 0;
+        }
+
+        .entretien-list li {
+            background-color: #f8f9fa; /* Fond clair */
+            border: 1px solid #ddd; /* Bordure grise */
+            padding: 10px;
+            margin-bottom: 10px; /* Espace entre les éléments */
+            border-radius: 5px; /* Coins arrondis */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entretien-list li strong {
+            font-weight: bold;
+        }
+
+        .entretien-list li em {
+            font-style: italic;
+        }
+
+        .entretien-list li span {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .entretien-list li a {
+            color: red;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .entretien-list li a:hover {
+            text-decoration: underline;
+        }
+
+        .entretien-list li .btn-warning, .entretien-list li .btn-danger {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        .entretien-list li .btn-warning {
+            background-color: orange;
+        }
+
+        .entretien-list li .btn-danger {
+            background-color: red;
+        }
+
+        .entretien-list li .btn-warning:hover {
+            background-color: darkorange;
+        }
+
+        .entretien-list li .btn-danger:hover {
+            background-color: darkred;
+        }
+    </style>
+
+    <ul class="entretien-list">
+        {% for entretien in entretiens %}
+            <li>
+                <div>
+                    <strong>{{ entretien.date|date('Y-m-d') }}</strong> - 
+                    <em>{{ entretien.descreption }}</em> - 
+                    <span>{{ entretien.getNomEquipement() }}</span>
+                </div>
+                <div>
+                    <a href="{{ path('edit_entretien', {'id': entretien.id}) }}" class="btn btn-warning">Modifier</a>
+                    <a href="{{ path('delete_entretien', {'id': entretien.id}) }}" class="btn btn-danger" 
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet entretien ?')">Supprimer</a>
+                </div>
+            </li>
+        {% else %}
+            <p>Aucun entretien trouvé.</p>
+        {% endfor %}
+    </ul>
+
+    
+{% endblock %}

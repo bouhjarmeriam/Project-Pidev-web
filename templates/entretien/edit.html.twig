@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un entretien{% endblock %}
+
+{% block body %}
+    <h1>Modifier l'entretien</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.date) }}
+        {{ form_row(form.descreption) }}
+        {{ form_row(form.nom_equipement) }}
+
+        <button class="btn btn-primary">Modifier</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('entretien_list') }}">Retour à la liste</a>
+{% endblock %}
