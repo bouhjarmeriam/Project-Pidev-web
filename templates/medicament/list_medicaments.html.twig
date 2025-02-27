@@ -13,30 +13,38 @@
     <table class="services-table" id="medicamentTable">
         <thead>
             <tr>
-                <th>Nom</th>
+                <th>
+                    <a href="{{ path('app_medicament_index', { 'sortField': 'm.nom_medicament', 'sortOrder': sortOrder == 'asc' ? 'desc' : 'asc' }) }}">
+                        Nom {% if sortField == 'm.nom_medicament' %} ({{ sortOrder }}) {% endif %}
+                    </a>
+                </th>
                 <th>Description</th>
                 <th>Type</th>
                 <th>Prix (€)</th>
                 <th>Quantité</th>
                 <th>Date d'Entrée</th>
-                <th>Date d'Expiration</th>
+                <th>
+                    <a href="{{ path('app_medicament_index', { 'sortField': 'm.date_expiration', 'sortOrder': sortOrder == 'asc' ? 'desc' : 'asc' }) }}">
+                        Date d'Expiration {% if sortField == 'm.date_expiration' %} ({{ sortOrder }}) {% endif %}
+                    </a>
+                </th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for medicament in medicaments|sort((a, b) => a.nomMedicament <=> b.nomMedicament) %}
+            {% for medicament in medicaments %}
                 <tr>
-                    <td>{{ medicament.nomMedicament }}</td>
-                    <td>{{ medicament.descriptionMedicament }}</td>
-                    <td>{{ medicament.typeMedicament }}</td>
-                    <td>{{ medicament.prixMedicament|number_format(2, ',', ' ') }} €</td>
-                    <td>{{ medicament.quantiteStock }}</td>
-                    <td>{{ medicament.dateEntree|date('d-m-Y') }}</td>
-                    <td>{{ medicament.dateExpiration|date('d-m-Y') }}</td>
+                    <td>{{ medicament.getNomMedicament() }}</td>
+                    <td>{{ medicament.getDescriptionMedicament() }}</td>
+                    <td>{{ medicament.getTypeMedicament() }}</td>
+                    <td>{{ medicament.getPrixMedicament()|number_format(2, ',', ' ') }} €</td>
+                    <td>{{ medicament.getQuantiteStock() }}</td>
+                    <td>{{ medicament.getDateEntree()|date('d-m-Y') }}</td>
+                    <td>{{ medicament.getDateExpiration()|date('d-m-Y') }}</td>
                     <td class="actions">
-                        <a href="{{ path('app_medicament_edit', {'id': medicament.id}) }}" class="btn btn-edit">Modifier</a>
-                        <form action="{{ path('app_medicament_delete', {'id': medicament.id}) }}" method="post" style="display:inline;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ medicament.id) }}">
+                        <a href="{{ path('app_medicament_edit', {'id': medicament.getId()}) }}" class="btn btn-edit">Modifier</a>
+                        <form action="{{ path('app_medicament_delete', {'id': medicament.getId()}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ medicament.getId()) }}">
                             <button type="submit" class="btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer ce médicament ?');">Supprimer</button>
                         </form>
                     </td>
@@ -120,6 +128,15 @@
         color: white;
         font-size: 16px;
         text-transform: uppercase;
+    }
+
+    .services-table th a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .services-table th a:hover {
+        text-decoration: underline;
     }
 
     .services-table tbody tr:nth-child(even) {

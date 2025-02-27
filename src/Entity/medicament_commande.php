@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\MedicamentCommandeRepository;
 
 #[ORM\Entity(repositoryClass: MedicamentCommandeRepository::class)]
-class MedicamentCommande
+class Medicament_commande
 {
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Commande::class, inversedBy: "commandeMedicament")]

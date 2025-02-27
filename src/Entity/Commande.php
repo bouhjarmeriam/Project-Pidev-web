@@ -33,7 +33,11 @@ class Commande
     #[ORM\JoinTable(name: 'commande_medicament')]
     private Collection $medicaments;
 
+    #[ORM\Column(length: 255, options: ['default' => 'pending'])]
+    private ?string $status = 'pending';
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSessionId = null;
 
     private ?string $nouveauMedicament = null;
 
@@ -135,5 +139,29 @@ class Commande
         $this->quantite = $quantite;
 
         return $this;
+    }
+
+
+
+    public function getStatus(): ?string
+    {
+    return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+    $this->status = $status;
+    return $this;
+    }
+
+    public function getStripeSessionId(): ?string
+    {
+    return $this->stripeSessionId;
+    }
+
+    public function setStripeSessionId(?string $stripeSessionId): static
+    {
+    $this->stripeSessionId = $stripeSessionId;
+    return $this;
     }
 }

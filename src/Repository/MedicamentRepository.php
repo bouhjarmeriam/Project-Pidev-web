@@ -5,47 +5,36 @@ namespace App\Repository;
 use App\Entity\Medicament;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query;
 
-/**
- * @extends ServiceEntityRepository<Medicament>
- */
 class MedicamentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Medicament::class);
     }
-    public function findByDescription(string $description): array
+
+    /**
+     * Search and filter medications based on name and sorting order
+     */
+    public function findByFiltersQuery(?string $searchTerm = '', string $sortField = 'm.nom_medicament', string $sortOrder = 'asc'): Query
 {
-    return $this->createQueryBuilder('m')
-        ->where('m.description_medicament = :description')
-        ->setParameter('description', $description)
-        ->getQuery()
-        ->getResult();
+    $qb = $this->createQueryBuilder('m');
+
+    if (!empty($searchTerm)) {
+        $qb->andWhere('m.nom_medicament LIKE :search OR m.description_medicament LIKE :search')
+            ->setParameter('search', '%' . $searchTerm . '%');
+    }
+
+    // Ensure the sort field is valid to prevent SQL injection
+    $allowedFields = ['m.nom_medicament', 'm.date_expiration'];
+    if (!in_array($sortField, $allowedFields)) {
+        $sortField = 'm.nom_medicament';
+    }
+
+    $qb->orderBy($sortField, $sortOrder);
+
+    return $qb->getQuery();
 }
 
-//    /**
-//     * @return Medicament[] Returns an array of Medicament objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Medicament
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use Knp\Component\Pager\PaginatorInterface;
 
 use App\Entity\Medicament;
 use App\Form\MedicamentType;
@@ -15,21 +16,23 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MedicamentController extends AbstractController
 {
     #[Route('/medicament/list', name: 'app_medicament_index', methods: ['GET'])]
-    public function index(MedicamentRepository $medicamentRepository, Request $request): Response
+    public function index(MedicamentRepository $medicamentRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $searchTerm = $request->query->get('search', '');
-
-        // Fetch & filter medicaments
-        $medicaments = $medicamentRepository->createQueryBuilder('m')
-            ->where('m.nom_medicament LIKE :search')
-            ->setParameter('search', '%' . $searchTerm . '%')
-            ->orderBy('m.nom_medicament', 'ASC')
-            ->getQuery()
-            ->getResult();
-
+        $sortField = $request->query->get('sortField', 'm.nom_medicament'); // FIXED FIELD NAME
+        $sortOrder = $request->query->get('sortOrder', 'asc');
+        $page = $request->query->getInt('page', 1);
+    
+        // Fetch paginated medications with sorting
+        $query = $medicamentRepository->findByFiltersQuery($searchTerm, $sortField, $sortOrder);
+    
+        $medicaments = $paginator->paginate($query, $page, 10);
+    
         return $this->render('medicament/list_medicaments.html.twig', [
             'medicaments' => $medicaments,
             'searchTerm' => $searchTerm,
+            'sortField' => $sortField,
+            'sortOrder' => $sortOrder,
         ]);
     }
 
