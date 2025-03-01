@@ -14,6 +14,9 @@
         <h1>Catégorie : {{ category }}</h1>
         <p>Affichage des informations pour la catégorie {{ category }}.</p>
 
+        <!-- Barre de recherche -->
+        <input type="text" id="search-bar" class="form-control mb-3" placeholder="Rechercher un équipement" onkeyup="filterEquipements()" />
+
         <!-- Bouton pour ajouter un équipement à cette catégorie -->
         <a href="{{ path('add_equipement', {'category': category}) }}" class="btn btn-primary mb-3">
             Ajouter un équipement à la catégorie : {{ category }}
@@ -21,9 +24,9 @@
 
         <!-- Affichage de la liste des équipements -->
         <h3>Liste des équipements</h3>
-        <ul class="list-group">
+        <ul class="list-group" id="equipement-list">
             {% for equipement in equipements %}
-                <li class="list-group-item">
+                <li class="list-group-item equipement-item">
                     <strong>{{ equipement.nom }}</strong> - 
                     <em>{{ equipement.type }}</em> - 
                     <span>{{ equipement.category }}</span> - 
@@ -65,6 +68,24 @@
         </ul>
     </div>
 
+    <script>
+        function filterEquipements() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const equipementItems = document.querySelectorAll('.equipement-item');
+
+            equipementItems.forEach(item => {
+                const equipementName = item.querySelector('strong').textContent.toLowerCase();
+                const equipementType = item.querySelector('em').textContent.toLowerCase();
+
+                // Si le nom ou le type de l'équipement contient le terme de recherche, on le montre
+                if (equipementName.includes(searchTerm) || equipementType.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>
-
