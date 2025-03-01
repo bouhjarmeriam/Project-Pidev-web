@@ -1,8 +1,9 @@
 <?php
 
-// src/Controller/EntretienController.php
 namespace App\Controller;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Entity\Entretien;
 use App\Entity\Equipement;
 use App\Form\EntretienType;
@@ -13,18 +14,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/entretien')]
 class EntretienController extends AbstractController
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    // Injection de la dépendance Doctrine dans le constructeur
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/entretien/create/{equipement_id}', name: 'create_entretien')]
-    public function create(Request $request, EntityManagerInterface $entityManager, int $equipement_id): Response
+    #[Route('/create/{equipement_id}', name: 'create_entretien')]
+    public function create(Request $request, int $equipement_id): Response
     {
         $equipement = $this->entityManager->getRepository(Equipement::class)->find($equipement_id);
 
@@ -37,12 +38,11 @@ class EntretienController extends AbstractController
         $entretien->setNomEquipement($equipement->getNom());
 
         $form = $this->createForm(EntretienType::class, $entretien);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($entretien);
-            $entityManager->flush();
+            $this->entityManager->persist($entretien);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'entretien a été créé avec succès !');
 
@@ -54,7 +54,7 @@ class EntretienController extends AbstractController
         ]);
     }
 
-    #[Route('/entretien', name: 'entretien_list')]
+    #[Route('/', name: 'entretien_list')]
     public function list(EntretienRepository $entretienRepository): Response
     {
         $entretiens = $entretienRepository->findAll();
@@ -64,8 +64,8 @@ class EntretienController extends AbstractController
         ]);
     }
 
-    #[Route('/entretien/edit/{id}', name: 'edit_entretien')]
-    public function edit(int $id, Request $request, EntityManagerInterface $entityManager, EntretienRepository $entretienRepository): Response
+    #[Route('/edit/{id}', name: 'edit_entretien')]
+    public function edit(int $id, Request $request, EntretienRepository $entretienRepository): Response
     {
         $entretien = $entretienRepository->find($id);
 
@@ -74,11 +74,10 @@ class EntretienController extends AbstractController
         }
 
         $form = $this->createForm(EntretienType::class, $entretien);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'entretien a été modifié avec succès !');
 
@@ -91,20 +90,49 @@ class EntretienController extends AbstractController
         ]);
     }
 
-    #[Route('/entretien/delete/{id}', name: 'delete_entretien')]
-    public function delete(int $id, EntityManagerInterface $entityManager, EntretienRepository $entretienRepository): Response
+    #[Route('/delete/{id}', name: 'delete_entretien')]
+    public function delete(int $id): Response
     {
-        $entretien = $entretienRepository->find($id);
+        $entretien = $this->entityManager->getRepository(Entretien::class)->find($id);
 
         if (!$entretien) {
             throw $this->createNotFoundException('L\'entretien avec l\'ID '.$id.' n\'existe pas.');
         }
 
-        $entityManager->remove($entretien);
-        $entityManager->flush();
+        $this->entityManager->remove($entretien);
+        $this->entityManager->flush();
 
         $this->addFlash('success', 'L\'entretien a été supprimé avec succès !');
 
         return $this->redirectToRoute('entretien_list');
+    }
+
+    #[Route('/{id}/generer-rapport', name: 'generate_entretien_report')]
+    public function generateReport(int $id): Response
+    {
+        $entretien = $this->entityManager->getRepository(Entretien::class)->find($id);
+
+        if (!$entretien) {
+            throw $this->createNotFoundException('Entretien non trouvé');
+        }
+
+        $html = $this->renderView('entretien/rapport.html.twig', [
+            'entretien' => $entretien,
+        ]);
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->output(),
+            200,
+            ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="rapport_entretien.pdf"']
+        );
     }
 }

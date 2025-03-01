@@ -3,14 +3,125 @@
 {% block title %}Modifier un entretien{% endblock %}
 
 {% block body %}
+    <style>
+        /* Fond général de la page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+        }
+
+        /* Pour le titre de la page */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 20px;
+            font-size: 2rem;
+        }
+
+        /* Pour le formulaire */
+        .form-group {
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            font-size: 1.1rem;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            color: #34495e;
+            box-sizing: border-box;
+        }
+
+        /* Pour afficher les erreurs de validation */
+        .form-group .form-error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Style du bouton de soumission */
+        button.btn-primary {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        button.btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* Lien pour retourner à la liste */
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
     <h1>Modifier l'entretien</h1>
 
     {{ form_start(form) }}
-        {{ form_row(form.date) }}
-        {{ form_row(form.descreption) }}
-        {{ form_row(form.nom_equipement) }}
+        
+        <!-- Affichage du champ de la date avec erreurs -->
+        <div class="form-group">
+            {{ form_label(form.date) }}
+            {{ form_widget(form.date) }}
+            {% if form.date.vars.errors|length > 0 %}
+                <div class="form-error">
+                    {{ form_errors(form.date) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Affichage du champ de la description avec erreurs -->
+        <div class="form-group">
+            {{ form_label(form.descreption) }}
+            {{ form_widget(form.descreption) }}
+            {% if form.descreption.vars.errors|length > 0 %}
+                <div class="form-error">
+                    {{ form_errors(form.descreption) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Affichage du champ du nom de l'équipement avec erreurs -->
+        <div class="form-group">
+            {{ form_label(form.nom_equipement) }}
+            {{ form_widget(form.nom_equipement) }}
+            {% if form.nom_equipement.vars.errors|length > 0 %}
+                <div class="form-error">
+                    {{ form_errors(form.nom_equipement) }}
+                </div>
+            {% endif %}
+        </div>
 
         <button class="btn btn-primary">Modifier</button>
+
     {{ form_end(form) }}
 
     <a href="{{ path('entretien_list') }}">Retour à la liste</a>

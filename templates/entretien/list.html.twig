@@ -1,75 +1,116 @@
-{# templates/entretien/list.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des entretiens{% endblock %}
 
 {% block body %}
-    <h1>Liste des entretiens</h1>
-
     <style>
-        /* Style pour le container de la liste */
-        .entretien-list {
-            list-style-type: none; /* Supprimer les puces */
+        /* Ajout d'un fond et un padding général pour tout le body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 0;
+            background-color: #f4f6f9;
         }
 
+        /* Pour le titre de la page */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 20px;
+            font-size: 2rem;
+        }
+
+        /* Pour la liste des entretiens */
+        .entretien-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Pour chaque élément de la liste */
         .entretien-list li {
-            background-color: #f8f9fa; /* Fond clair */
-            border: 1px solid #ddd; /* Bordure grise */
-            padding: 10px;
-            margin-bottom: 10px; /* Espace entre les éléments */
-            border-radius: 5px; /* Coins arrondis */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
         }
 
-        .entretien-list li strong {
+        /* Ajout d'un effet au survol */
+        .entretien-list li:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Pour les infos de l'entretien */
+        .entretien-list div {
+            margin-bottom: 10px;
+        }
+
+        /* Style des informations de date, description et équipement */
+        .entretien-list strong {
+            font-size: 1.1rem;
+            color: #34495e;
+        }
+
+        .entretien-list em {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .entretien-list span {
+            font-size: 1rem;
+            color: #2ecc71;
             font-weight: bold;
         }
 
-        .entretien-list li em {
-            font-style: italic;
-        }
-
-        .entretien-list li span {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .entretien-list li a {
-            color: red;
+        /* Pour le conteneur des boutons */
+        .entretien-list div a {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 10px 15px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
-        .entretien-list li a:hover {
-            text-decoration: underline;
-        }
-
-        .entretien-list li .btn-warning, .entretien-list li .btn-danger {
+        /* Styles des boutons */
+        .entretien-list .btn-warning {
+            background-color: #f39c12;
             color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 3px;
         }
 
-        .entretien-list li .btn-warning {
-            background-color: orange;
+        .entretien-list .btn-danger {
+            background-color: #e74c3c;
+            color: white;
         }
 
-        .entretien-list li .btn-danger {
-            background-color: red;
+        .entretien-list .btn-info {
+            background-color: #3498db;
+            color: white;
         }
 
-        .entretien-list li .btn-warning:hover {
-            background-color: darkorange;
+        /* Effet au survol des boutons */
+        .entretien-list a:hover {
+            opacity: 0.8;
         }
 
-        .entretien-list li .btn-danger:hover {
-            background-color: darkred;
+        /* Message d'absence d'entretiens */
+        p {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #bdc3c7;
         }
     </style>
+
+    <h1>Liste des entretiens</h1>
 
     <ul class="entretien-list">
         {% for entretien in entretiens %}
@@ -83,6 +124,8 @@
                     <a href="{{ path('edit_entretien', {'id': entretien.id}) }}" class="btn btn-warning">Modifier</a>
                     <a href="{{ path('delete_entretien', {'id': entretien.id}) }}" class="btn btn-danger" 
                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet entretien ?')">Supprimer</a>
+                    <!-- Bouton pour générer le PDF de l'entretien -->
+                    <a href="{{ path('generate_entretien_report', {'id': entretien.id}) }}" class="btn btn-info">Générer PDF Entretien</a>
                 </div>
             </li>
         {% else %}
@@ -90,5 +133,4 @@
         {% endfor %}
     </ul>
 
-    
 {% endblock %}
