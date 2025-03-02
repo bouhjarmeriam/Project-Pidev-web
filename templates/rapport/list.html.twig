@@ -1,0 +1,24 @@
+{# templates/rapport/list.html.twig #}
+<h1>Liste des rapports générés</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Nom du fichier</th>
+            <th>Date de création</th>
+            <th>Entretien associé</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rapport in rapports %}
+            <tr>
+                <td>{{ rapport.nomFichier }}</td>
+                <td>{{ rapport.dateCreation|date('Y-m-d H:i') }}</td>
+                <td>{{ rapport.entretien.nomEquipement }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">Aucun rapport trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
