@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use App\Entity\Entretien;
 use App\Entity\Equipement;
 use App\Form\EntretienType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EntretienRepository;
+use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class EntretienController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
+    private Pdf $knpSnappyPdf;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, Pdf $knpSnappyPdf)
     {
         $this->entityManager = $entityManager;
+        $this->knpSnappyPdf = $knpSnappyPdf;
     }
 
     #[Route('/create/{equipement_id}', name: 'create_entretien')]
@@ -116,23 +117,21 @@ class EntretienController extends AbstractController
             throw $this->createNotFoundException('Entretien non trouvé');
         }
 
+        // Générer la vue HTML du rapport
         $html = $this->renderView('entretien/rapport.html.twig', [
             'entretien' => $entretien,
         ]);
 
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $dompdf = new Dompdf($options);
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        // Générer le PDF avec KnpSnappy
+        $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
 
         return new Response(
-            $dompdf->output(),
+            $pdfContent,
             200,
-            ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="rapport_entretien.pdf"']
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="rapport_entretien.pdf"',
+            ]
         );
     }
 }
