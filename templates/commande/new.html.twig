@@ -1,9 +1,10 @@
 
-{% block title %}<h1>Ajouter une Commande</h1>{% endblock %}
+
 
 {% block body %}
+
 <div class="edit-container">
-    <h2 class="edit-title">➕ Ajouter une Commande</h2>
+    <h2 class="edit-title">➕ Passez votre commande de médicament</h2>
 
     <!-- ✅ Flash Messages -->
     {% for flash in app.flashes('error') %}
@@ -29,7 +30,7 @@
     </div>
 
     <div class="form-group">
-        {{ form_label(form.medicaments, 'Médicaments') }}
+        {{ form_label(form.medicaments, 'Médicaments disponibles') }}
         {{ form_widget(form.medicaments, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.medicaments) }}
         <div class="invalid-feedback">Veuillez sélectionner au moins un médicament.</div>
@@ -171,3 +172,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 {% endblock %}
+
+

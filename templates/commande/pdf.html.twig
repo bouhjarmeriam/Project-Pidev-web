@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture #{{ commande.id }}</title>
+    <style>
+        /* Debug CSS */
+        .debug-info {
+            color: red;
+            font-size: 8px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        body { font-family: 'Helvetica', sans-serif; margin: 40px; }
+        .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .total { font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="debug-info">
+        Généré le: {{ "now"|date('d/m/Y H:i:s') }} | 
+        Médicaments: {{ commande.medicaments|length }} | 
+        Statut: {{ commande.status }}
+    </div>
+
+    <div class="header">
+        <h1>Facture #{{ commande.id }}</h1>
+        <p>Date: {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+        <p>Statut: {{ commande.status|upper }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Médicament</th>
+                <th>Prix unitaire</th>
+                <th>Quantité</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicament in commande.medicaments %}
+            <tr>
+                <td>{{ medicament.nomMedicament }}</td>
+                <td>{{ medicament.prixMedicament|number_format(3, ',', ' ') }} TND</td>
+                <td>{{ commande.quantite }}</td>
+                <td>{{ (medicament.prixMedicament * commande.quantite)|number_format(3, ',', ' ') }} TND</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Aucun médicament trouvé</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total">
+        Total général: {{ commande.totalPrix|number_format(3, ',', ' ') }} TND
+    </div>
+</body>
+</html>

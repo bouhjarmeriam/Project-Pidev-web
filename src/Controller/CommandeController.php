@@ -14,6 +14,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use MyPdfBundle\Services\PdfGenerator;
+use Psr\Log\LoggerInterface;
+
 
 final class CommandeController extends AbstractController
 {
@@ -36,7 +40,7 @@ final class CommandeController extends AbstractController
     }
 
     #[Route('/command/new', name: 'app_commande_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, MedicamentRepository $medicamentRepository): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $commande = new Commande();
         $commande->setDateCommande(new \DateTime());
@@ -45,24 +49,7 @@ final class CommandeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $nouveauMedicamentNom = $form->get('nouveauMedicament')->getData();
-
-            if ($nouveauMedicamentNom) {
-                $medicamentExist = $medicamentRepository->findOneBy(['nom_medicament' => $nouveauMedicamentNom]);
-
-                if (!$medicamentExist) {
-                    $nouveauMedicament = new Medicament();
-                    $nouveauMedicament->setNomMedicament($nouveauMedicamentNom);
-                    $nouveauMedicament->setQuantiteStock(0); // Initialiser le stock à 0
-
-                    $entityManager->persist($nouveauMedicament);
-                    $commande->addMedicament($nouveauMedicament);
-                } else {
-                    $commande->addMedicament($medicamentExist);
-                }
-            }
-
-            // Vérifier la disponibilité du stock
+            // Vérification du stock
             $stockInsufficient = false;
             foreach ($commande->getMedicaments() as $medicament) {
                 if ($commande->getQuantite() > $medicament->getQuantiteStock()) {
@@ -74,14 +61,14 @@ final class CommandeController extends AbstractController
             if ($stockInsufficient) {
                 $this->addFlash('error', 'Stock insuffisant pour cette commande.');
             } else {
-                // Réduire le stock des médicaments existants
+                // Mise à jour du stock
                 foreach ($commande->getMedicaments() as $medicament) {
                     $newStock = $medicament->getQuantiteStock() - $commande->getQuantite();
                     $medicament->setQuantiteStock($newStock);
                     $entityManager->persist($medicament);
                 }
 
-                // Calculate total price based on selected medicaments and quantities
+                // Calcul du prix total
                 $totalPrix = 0;
                 foreach ($commande->getMedicaments() as $medicament) {
                     $totalPrix += $medicament->getPrixMedicament() * $commande->getQuantite();
@@ -101,8 +88,9 @@ final class CommandeController extends AbstractController
         ]);
     }
 
+
     #[Route('/command/edit/{id}', name: 'app_commande_edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request, EntityManagerInterface $entityManager, CommandeRepository $commandeRepository, MedicamentRepository $medicamentRepository): Response
+    public function edit(int $id, Request $request, EntityManagerInterface $entityManager, CommandeRepository $commandeRepository): Response
     {
         $commande = $commandeRepository->find($id);
 
@@ -114,25 +102,7 @@ final class CommandeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérifier si un nouveau médicament a été ajouté
-            $nouveauMedicamentNom = $form->get('nouveauMedicament')->getData();
-
-            if ($nouveauMedicamentNom) {
-                $medicamentExist = $medicamentRepository->findOneBy(['nom_medicament' => $nouveauMedicamentNom]);
-
-                if (!$medicamentExist) {
-                    $nouveauMedicament = new Medicament();
-                    $nouveauMedicament->setNomMedicament($nouveauMedicamentNom);
-                    $nouveauMedicament->setQuantiteStock(0); // Initialiser à 0
-
-                    $entityManager->persist($nouveauMedicament);
-                    $commande->addMedicament($nouveauMedicament);
-                } else {
-                    $commande->addMedicament($medicamentExist);
-                }
-            }
-
-            // Recalculer le prix total
+            // Recalcul du prix total
             $totalPrix = 0;
             foreach ($commande->getMedicaments() as $medicament) {
                 $totalPrix += $medicament->getPrixMedicament() * $commande->getQuantite();
@@ -179,7 +149,7 @@ final class CommandeController extends AbstractController
                     'product_data' => [
                         'name' => 'Commande #' . $commande->getId(),
                     ],
-                    'unit_amount' => (int) ($commande->getTotalPrix() * 1000),
+                    'unit_amount' => (int) ($commande->getTotalPrix()),
                 ],
                 'quantity' => 1,
             ]],
@@ -195,29 +165,61 @@ final class CommandeController extends AbstractController
     }
 
     #[Route('/command/payment-success', name: 'app_payment_success', methods: ['GET'])]
-    public function paymentSuccess(Request $request, EntityManagerInterface $em, CommandeRepository $commandeRepo): Response
-    {
-        $sessionId = $request->query->get('session_id');
+    public function paymentSuccess(
+        Request $request,
+        EntityManagerInterface $em,
+        CommandeRepository $commandeRepo,
+        PdfGenerator $pdfGenerator,
+        LoggerInterface $logger
+    ): Response {
+        $logger->info('Début du traitement paymentSuccess');
+        
+        try {
+            $sessionId = $request->query->get('session_id');
+            $logger->debug('Session ID reçu: '.$sessionId);
 
-        if (!$sessionId) {
-            throw $this->createNotFoundException('Session ID not provided');
-        }
+            if (!$sessionId) {
+                $this->addFlash('error', 'Session ID manquant.');
+                return $this->redirectToRoute('app_command_list');
+            }
 
-        \Stripe\Stripe::setApiKey($this->getParameter('stripe_secret_key'));
-        $session = \Stripe\Checkout\Session::retrieve($sessionId);
+            \Stripe\Stripe::setApiKey($this->getParameter('stripe_secret_key'));
+            $session = \Stripe\Checkout\Session::retrieve($sessionId);
+            $logger->debug('Statut paiement Stripe: '.$session->payment_status);
 
-        $commande = $commandeRepo->findOneBy(['stripeSessionId' => $sessionId]);
+            $commande = $commandeRepo->findOneBy(['stripeSessionId' => $sessionId]);
+            if (!$commande) {
+                $logger->error('Commande non trouvée pour session: '.$sessionId);
+                throw $this->createNotFoundException('Aucune commande correspondante trouvée.');
+            }
 
-        if (!$commande) {
-            throw $this->createNotFoundException('Commande not found');
-        }
+            if ($session->payment_status === 'paid') {
+                $logger->info('Paiement confirmé, mise à jour de la commande ID: '.$commande->getId());
+                
+                $commande
+                    ->setStatus('payé')
+                    ->setDateCommande(new \DateTime());
 
-        if ($session->payment_status === 'paid') {
-            $commande->setStatus('paid');
-            $em->flush();
-            $this->addFlash('success', 'Paiement réussi ! Merci pour votre achat.');
-        } else {
-            $this->addFlash('error', 'Le paiement a échoué.');
+                $em->flush();
+
+                // Génération PDF
+                $logger->info('Génération du PDF pour commande ID: '.$commande->getId());
+                $pdfContent = $pdfGenerator->generateCommandePdf($commande);
+
+                return new Response(
+                    $pdfContent,
+                    Response::HTTP_OK,
+                    [
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'inline; filename="facture_'.$commande->getId().'.pdf"'
+                    ]
+                );
+            }
+
+            $this->addFlash('warning', 'Paiement non confirmé.');
+        } catch (\Exception $e) {
+            $logger->critical('Erreur paymentSuccess: '.$e->getMessage().' - Trace: '.$e->getTraceAsString());
+            $this->addFlash('error', 'Erreur lors du traitement : '.$e->getMessage());
         }
 
         return $this->redirectToRoute('app_command_list');
@@ -228,5 +230,18 @@ final class CommandeController extends AbstractController
     {
         $this->addFlash('error', 'Paiement annulé.');
         return $this->redirectToRoute('app_command_list');
+    }
+
+
+
+    #[Route('/command/download/{id}', name: 'app_commande_download', methods: ['GET'])]
+    public function downloadPdf(Commande $commande, PdfGenerator $pdfGenerator): Response
+    {
+        $pdfContent = $pdfGenerator->generateCommandePdf($commande);
+        
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="facture_'.$commande->getId().'.pdf"'
+        ]);
     }
 }

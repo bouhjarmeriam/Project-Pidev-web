@@ -11,6 +11,8 @@
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+        "dompdf/dompdf": "^3.1",
+        "nucleos/dompdf-bundle": "^4.3",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.0",
         "stripe/stripe-php": "^16.6",
@@ -56,6 +58,7 @@
     },
     "autoload": {
         "psr-4": {
+            "My\\PdfBundle\\": "src/MyPdfBundle/",
             "App\\": "src/"
         }
     },

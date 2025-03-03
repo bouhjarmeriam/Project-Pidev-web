@@ -20,8 +20,7 @@ class Commande
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateCommande = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $fournisseur = null;
+
 
     #[ORM\Column]
     private ?float $total_prix = null;
@@ -39,18 +38,7 @@ class Commande
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripeSessionId = null;
 
-    private ?string $nouveauMedicament = null;
-
-    public function getNouveauMedicament(): ?string
-    {
-    return $this->nouveauMedicament;
-    }
-
-    public function setNouveauMedicament(?string $nouveauMedicament): static
-    {
-    $this->nouveauMedicament = $nouveauMedicament;
-    return $this;
-    }
+    
     
     #[ORM\Column]
     private ?float $quantite = null;
@@ -78,17 +66,6 @@ class Commande
     }
 
 
-    public function getFournisseur(): ?string
-    {
-        return $this->fournisseur;
-    }
-
-    public function setFournisseur(string $fournisseur): static
-    {
-        $this->fournisseur = $fournisseur;
-
-        return $this;
-    }
 
     public function getTotalPrix(): ?float
     {

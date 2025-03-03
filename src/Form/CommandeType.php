@@ -28,12 +28,7 @@ class CommandeType extends AbstractType
                 'multiple' => true,
                 'required' => false,
             ])
-            ->add('nouveauMedicament', TextType::class, [
-                'required' => false,
-                'mapped' => false,
-                'label' => 'Ajouter un nouveau médicament',
-                'attr' => ['placeholder' => 'Nom du médicament'],
-            ])
+            
             ->add('quantite', IntegerType::class, [
                 'attr' => ['min' => 1],
                 'label' => 'Quantité demandée',  // Added comma here
@@ -42,18 +37,7 @@ class CommandeType extends AbstractType
                     new Assert\Positive(['message' => 'La quantité doit être positive.'])
                 ],
             ])
-            ->add('fournisseur', ChoiceType::class, [
-                'label' => 'Fournisseur',
-                'choices' => [
-                    'Fournisseur 1' => 'Fournisseur 1',
-                    'Fournisseur 2' => 'Fournisseur 2',
-                    'Fournisseur 3' => 'Fournisseur 3',
-                ],
-                'placeholder' => 'Sélectionnez un fournisseur',
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le fournisseur est requis.']),
-                ],
-            ])
+ 
             
             ->add('dateCommande', DateType::class, [
                 'widget' => 'single_text',
