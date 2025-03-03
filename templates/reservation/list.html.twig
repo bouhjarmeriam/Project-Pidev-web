@@ -1,0 +1,51 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('css1/tableau.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Liste des Réservations</h1>
+
+        <!-- Lien vers le calendrier -->
+        <a href="{{ path('reservation_calendrier') }}" class="btn btn-primary mb-4">
+            <i class="fas fa-calendar-alt"></i> Voir le calendrier des réservations
+        </a>
+
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Salle</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.salle.nom }}</td>
+                        <td>{{ reservation.dateDebut|date('Y-m-d H:i') }}</td>
+                        <td>{{ reservation.dateFin|date('Y-m-d H:i') }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if reservation.salle.status == 'Disponible' %}bg-success
+                                {% elseif reservation.salle.status == 'Occupé' %}bg-warning
+                                {% elseif reservation.salle.status == 'En maintenance' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                <i class="fas 
+                                    {% if reservation.salle.status == 'Disponible' %}fa-check-circle
+                                    {% elseif reservation.salle.status == 'Occupé' %}fa-exclamation-circle
+                                    {% elseif reservation.salle.status == 'En maintenance' %}fa-tools
+                                    {% else %}fa-question-circle{% endif %}"></i>
+                                {{ reservation.salle.status }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

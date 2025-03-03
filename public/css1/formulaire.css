@@ -1,0 +1,90 @@
+/* Centrage du formulaire */
+.form-container {
+    display: flex;
+    justify-content:right;
+    align-items: right;
+    min-height: 200vh;
+}
+
+/* Style de la carte (formulaire) */
+.card {
+    max-width: 500%;
+    width: 300%;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+/* En-tête du formulaire */
+.card-header {
+    background-color: #007bff; /* Bleu Bootstrap */
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Corps du formulaire */
+.card-body {
+    padding: 20px;
+}
+
+/* Champs du formulaire */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Labels */
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Boutons */
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Style des icônes dans le formulaire */
+.form-label i {
+    margin-right: 5px;
+    color: #007bff;
+}
+
+/* Amélioration du bouton "Choisir un fichier" */
+.form-control[type="file"] {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+/* Espacement entre les champs */
+.mb-3 {
+    margin-bottom: 15px;
+}
+
+/* Centrage du bouton */
+.text-center {
+    display: flex;
+    justify-content: center;
+}

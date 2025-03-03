@@ -1,0 +1,64 @@
+{% extends '/departement/base1.html.twig' %}
+
+{% block title %}Nos Départements{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{{ asset('css1/front.css') }}">
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Découvrez Nos Départements</h2>
+
+    <!-- Barre de recherche -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <input type="text" id="searchBar" class="form-control" placeholder="Rechercher un département...">
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="departementList">
+        {% for departement in departements %}
+            <div class="col departement-card">
+                <a href="{{ path('departement_etages_show', {'id': departement.id}) }}" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 rounded-lg h-100">
+                        <img src="{{ asset(departement.image) }}" class="card-img-top" alt="{{ departement.nom }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary fw-bold">{{ departement.nom }}</h5>
+                            <p class="card-text text-muted"><i class="fa fa-map-marker-alt"></i> {{ departement.adresse }}</p>
+                            <p class="text-warning">
+                                ⭐⭐⭐⭐⭐ ({{ departement.rating|default('Pas encore noté') }})
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Aucun département disponible pour le moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.getElementById("searchBar").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let cards = document.querySelectorAll(".departement-card");
+
+        cards.forEach(card => {
+            let title = card.querySelector(".card-title").textContent.toLowerCase();
+            if (title.includes(filter)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+</script>
+<iframe
+    src="https://www.chatbase.co/chatbot-iframe/mqDWyeqN2lfN8X8xHVULD"
+    width="100%"
+    style="height: 100%; min-height: 700px"
+    frameborder="0"
+></iframe>
+
+{% endblock %}

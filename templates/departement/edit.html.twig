@@ -1,0 +1,35 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Modifier le Département</h1>
+
+        <!-- Affichage des messages flash de succès -->
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Formulaire de modification avec novalidate -->
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <!-- Affichage des erreurs de validation -->
+        {% for field in form %}
+            <div class="form-group">
+                <!-- Label du champ -->
+                {{ form_label(field) }}
+                
+                <!-- Champ du formulaire -->
+                {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                
+            </div>
+        {% endfor %}
+
+        
+
+        {{ form_end(form) }}
+
+        <a href="{{ path('departement_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

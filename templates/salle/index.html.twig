@@ -1,0 +1,258 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block styles %}
+    <style>
+        .custom-table {
+            margin: 0 auto;
+            width: 80%;
+        }
+        .image-thumbnail {
+            width: 30px !important;
+            height: 30px !important;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+
+        .pagination a:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .pagination .disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            border: 1px solid #ccc;
+        }
+
+        .pagination .active {
+            background-color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-center">
+    <div class="container mt-5 text-center">
+        <h1 class="text-center mb-4 text-primary">
+            <i class="fas fa-list"></i> Liste des Salles
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger text-center">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if salles is empty %}
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle"></i> Aucune salle trouvée.
+            </div>
+        {% else %}
+
+            <!-- Formulaire de recherche et de tri -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                <a href="{{ path('salle_add') }}" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Ajouter une Salle
+                </a>
+
+                <form method="get" action="{{ path('salle_index') }}" class="d-flex align-items-center gap-3">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Rechercher une salle...">
+                    </div>
+
+                    <select name="sort_by" class="form-select">
+                        <option value="nom" {{ sort_by == 'nom' ? 'selected' : '' }}>Nom</option>
+                        <option value="capacite" {{ sort_by == 'capacite' ? 'selected' : '' }}>Capacité</option>
+                        <option value="type_salle" {{ sort_by == 'type_salle' ? 'selected' : '' }}>Type de salle</option>
+                        <option value="priorite" {{ sort_by == 'priorite' ? 'selected' : '' }}>Priorité</option>
+                    </select>
+
+                    <select name="sort_order" class="form-select">
+                        <option value="asc" {{ sort_order == 'asc' ? 'selected' : '' }}>Croissant</option>
+                        <option value="desc" {{ sort_order == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Appliquer
+                    </button>
+                </form>
+
+                <a href="{{ path('salle_export') }}" class="btn btn-info">
+                    <i class="fas fa-file-download"></i> Exporter les Salles
+                </a>
+            </div>
+
+            <!-- Tableau des salles -->
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover custom-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>
+                                        <a href="{{ path('salle_index', {
+                                            search: search,
+                                            sort_by: 'nom',
+                                            sort_order: sort_by == 'nom' and sort_order == 'asc' ? 'desc' : 'asc'
+                                        }) }}">
+                                            Nom {% if sort_by == 'nom' %}({{ sort_order == 'asc' ? '↑' : '↓' }}){% endif %}
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ path('salle_index', {
+                                            search: search,
+                                            sort_by: 'capacite',
+                                            sort_order: sort_by == 'capacite' and sort_order == 'asc' ? 'desc' : 'asc'
+                                        }) }}">
+                                            Capacité {% if sort_by == 'capacite' %}({{ sort_order == 'asc' ? '↑' : '↓' }}){% endif %}
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ path('salle_index', {
+                                            search: search,
+                                            sort_by: 'type_salle',
+                                            sort_order: sort_by == 'type_salle' and sort_order == 'asc' ? 'desc' : 'asc'
+                                        }) }}">
+                                            Type {% if sort_by == 'type_salle' %}({{ sort_order == 'asc' ? '↑' : '↓' }}){% endif %}
+                                        </a>
+                                    </th>
+                                    <th>Étage</th>
+                                    <th>Image</th>
+                                    <th>Status</th>
+                                    <th>
+                                        <a href="{{ path('salle_index', {
+                                            search: search,
+                                            sort_by: 'priorite',
+                                            sort_order: sort_by == 'priorite' and sort_order == 'asc' ? 'desc' : 'asc'
+                                        }) }}">
+                                            Priorité {% if sort_by == 'priorite' %}({{ sort_order == 'asc' ? '↑' : '↓' }}){% endif %}
+                                        </a>
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sallesList">
+                                {% for salle in salles %}
+                                    <tr class="salle-row">
+                                        <td>{{ salle.nom }}</td>
+                                        <td>{{ salle.capacite }}</td>
+                                        <td>{{ salle.typeSalle }}</td>
+                                        <td>{{ salle.etage ? salle.etage.Numero : 'Non défini' }}</td>
+                                        <td>
+                                            {% if salle.image %}
+                                                <img src="{{ asset(salle.image) }}" alt="Image" class="image-thumbnail" />
+                                            {% else %}
+                                                <span class="text-muted">Aucune image</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm 
+                                                {% if salle.status == 'Disponible' %}btn-success
+                                                {% elseif salle.status == 'Occupé' %}btn-warning
+                                                {% elseif salle.status == 'En maintenance' %}btn-danger
+                                                {% else %}btn-secondary{% endif %}" disabled>
+                                                {{ salle.status }}
+                                            </button>
+                                        </td>
+                                        <td>{{ salle.priorite }}</td>
+                                        <td>
+                                            <a href="{{ path('salle_edit', {'id': salle.id}) }}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if salle.status == 'Disponible' %}
+                                                <a href="{{ path('reservation_new', {'salleId': salle.id}) }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                    <i class="fas fa-ban"></i> Indisponible
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <a href="{{ path('salle_index', {
+                    page: current_page - 1,
+                    search: search,
+                    sort_by: sort_by,
+                    sort_order: sort_order
+                }) }}" class="{% if current_page == 1 %}disabled{% endif %}">
+                    &laquo; Précédent
+                </a>
+
+                {% for i in 1..max_page %}
+                    <a href="{{ path('salle_index', {
+                        page: i,
+                        search: search,
+                        sort_by: sort_by,
+                        sort_order: sort_order
+                    }) }}" class="{% if i == current_page %}active{% endif %}">
+                        {{ i }}
+                    </a>
+                {% endfor %}
+
+                <a href="{{ path('salle_index', {
+                    page: current_page + 1,
+                    search: search,
+                    sort_by: sort_by,
+                    sort_order: sort_order
+                }) }}" class="{% if current_page == max_page %}disabled{% endif %}">
+                    Suivant &raquo;
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.21/dist/sweetalert2.all.min.js"></script>
+
+<!-- Affichage de la SweetAlert après modification -->
+{% if app.session.flashbag.get('success') is not empty %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Salle modifiée avec succès!',
+            text: 'Les informations de la salle ont été mises à jour.',
+            confirmButtonText: 'OK'
+        });
+    </script>
+{% endif %}
+
+{% endblock %}

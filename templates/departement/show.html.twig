@@ -1,0 +1,70 @@
+{% extends '/departement/base1.html.twig' %}
+
+{% block title %}{{ departement.nom }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <img src="{{ asset(departement.image) }}" class="card-img-top" alt="{{ departement.nom }}" style="height: 300px; object-fit: cover;">
+
+        <div class="card-body">
+            <h2 class="card-title text-primary fw-bold">{{ departement.nom }}</h2>
+            <p class="card-text"><i class="fa fa-map-marker-alt"></i> {{ departement.adresse }}</p>
+            <p><strong>Nombre d'étages :</strong> {{ departement.nbreetage }}</p>
+
+            <!-- Rating System -->
+            <h5 class="mt-4">Évaluer ce département :</h5>
+            <div class="rating">
+                <i class="fa fa-star" data-value="1"></i>
+                <i class="fa fa-star" data-value="2"></i>
+                <i class="fa fa-star" data-value="3"></i>
+                <i class="fa fa-star" data-value="4"></i>
+                <i class="fa fa-star" data-value="5"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles CSS pour le rating -->
+<style>
+    .rating {
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .rating .fa-star {
+        color: #ccc;
+        transition: color 0.3s;
+    }
+    .rating .fa-star.selected {
+        color: gold;
+    }
+</style>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script JS pour gérer le rating -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll(".rating .fa-star");
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                let value = this.getAttribute("data-value");
+                stars.forEach(s => s.classList.remove("selected"));
+                for (let i = 0; i < value; i++) {
+                    stars[i].classList.add("selected");
+                }
+
+                // Affichage d'une SweetAlert
+                Swal.fire({
+                    title: "Merci pour votre note !",
+                    text: "Vous avez attribué " + value + " étoiles à ce département.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'departement/base.html.twig' %}
+
+{% block title %} Ajouter une Salle {% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{{ asset('css1/formulaire.css') }}">
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-6">  
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0"><i class="fas fa-building"></i> Formulaire d'Ajout</h5>
+                </div>
+                <div class="card-body p-4">
+                    
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+                    
+                    {{ form_errors(form) }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-tag"></i> Nom de la Salle</label>
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-users"></i> Capacité</label>
+                        {{ form_widget(form.capacite, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 30'}}) }}
+                        {{ form_errors(form.capacite) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-cogs"></i> Type de Salle</label>
+                        {{ form_widget(form.type_salle, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.type_salle) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-building"></i> Étage</label>
+                        {{ form_widget(form.etage, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.etage) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-image"></i> Image de la Salle</label>
+                        {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.image) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-toggle-on"></i> Statut</label>
+                        {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.status) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-exclamation-circle"></i> Priorité</label>
+                        {{ form_widget(form.priorite, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la priorité (ex: Haute, Moyenne, Basse)'}}) }}
+                        {{ form_errors(form.priorite) }}
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Ajouter</button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if app.session.flashbag.get('success') is not empty %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Salle ajoutée avec succès!',
+            text: 'La salle a été ajoutée dans le système.',
+            confirmButtonText: 'OK'
+        });
+    </script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends '/departement/base1.html.twig' %}
+
+{% block title %} Salles de l'étage {{ etage.numero }} {% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Salles de l'étage {{ etage.numero }}</h2>
+
+    <div class="row">
+        {% for salle in salles %}
+            <div class="col-md-4">
+                <div class="card mb-3 shadow-sm border-0 rounded-lg">
+                    {% if salle.image %}
+                        <img src="{{ asset(salle.image) }}" class="card-img-top" alt="Salle {{ salle.nom }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary fw-bold">Salle {{ salle.nom }}</h5>
+                        <p class="card-text text-muted">Capacité : {{ salle.capacite }}</p>
+                        <p class="card-text"><i class="fa fa-door-closed"></i> Type : {{ salle.typeSalle }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-center text-muted">Aucune salle trouvée.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

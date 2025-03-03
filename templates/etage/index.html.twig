@@ -1,0 +1,161 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('css1/tableau.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-center">
+    <div class="container mt-5 text-center">
+        <h1 class="text-center mb-4 text-primary">
+            <i class="fas fa-list"></i> Liste des Étages
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if etages is empty %}
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle"></i> Aucun étage trouvé.
+            </div>
+        {% else %}
+            <div class="d-flex justify-content-center mb-4">
+                <a href="{{ path('etage_new') }}" class="btn btn-success me-3">
+                    <i class="fas fa-plus-circle"></i> Ajouter un Étage
+                </a>
+                <div class="input-group w-50 shadow-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un étage..." value="{{ search }}">
+                </div>
+                <div class="ms-3">
+                    <select id="sortBy" class="form-select shadow-sm">
+                    
+    
+                        <option value="departement" {% if sort_by == 'departement' %}selected{% endif %}>Trier par Département</option>
+                    </select>
+                </div>
+                <div class="ms-3">
+                    <select id="sortOrder" class="form-select shadow-sm">
+                        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascendant</option>
+                        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descendant</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered custom-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Numéro</th>
+                                    <th>Nombre de Salles</th>
+                                    <th>Département</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="etagesList">
+                                {% for etage in etages %}
+                                    <tr class="etage-row">
+                                        <td>{{ etage.numero }}</td>
+                                        <td>{{ etage.nbrSalle }}</td>
+                                        <td>{{ etage.departement ? etage.departement.nom : 'Aucun' }}</td>
+                                        <td>
+                                            <a href="{{ path('etage_edit', {'id': etage.id}) }}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeletion('{{ path('etage_delete', {'id': etage.id}) }}', '{{ csrf_token('delete' ~ etage.id) }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                     <div class="pagination">
+    <a href="{{ path('etage_index', {page: current_page - 1}) }}" 
+       class="{% if current_page == 1 %}disabled{% endif %}">
+        &laquo; Précédent
+    </a>
+
+    {% for i in 1..max_page %}
+        <a href="{{ path('etage_index', {page: i}) }}" 
+           class="{% if i == current_page %}active{% endif %}">
+            {{ i }}
+        </a>
+    {% endfor %}
+
+    <a href="{{ path('etage_index', {page: current_page + 1}) }}" 
+       class="{% if current_page == max_page %}disabled{% endif %}">
+        Suivant &raquo;
+    </a>
+</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script for search and sorting -->
+<script>
+    document.getElementById("searchInput").addEventListener("input", function () {
+        const search = this.value;
+        const sortBy = document.getElementById("sortBy").value;
+        const sortOrder = document.getElementById("sortOrder").value;
+        window.location.href = `{{ path('etage_index') }}?search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+    });
+
+    document.getElementById("sortBy").addEventListener("change", function () {
+        const search = document.getElementById("searchInput").value;
+        const sortBy = this.value;
+        const sortOrder = document.getElementById("sortOrder").value;
+        window.location.href = `{{ path('etage_index') }}?search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+    });
+
+    document.getElementById("sortOrder").addEventListener("change", function () {
+        const search = document.getElementById("searchInput").value;
+        const sortBy = document.getElementById("sortBy").value;
+        const sortOrder = this.value;
+        window.location.href = `{{ path('etage_index') }}?search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+    });
+
+    // Confirmation de suppression
+    function confirmDeletion(deleteUrl, csrfToken) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: 'Vous ne pourrez pas revenir en arrière !',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+
+                const csrfField = document.createElement('input');
+                csrfField.type = 'hidden';
+                csrfField.name = '_token';
+                csrfField.value = csrfToken;
+                form.appendChild(csrfField);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.21/dist/sweetalert2.all.min.js"></script>
+
+{% endblock %}

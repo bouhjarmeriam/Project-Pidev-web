@@ -1,0 +1,204 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block styles %}
+<style>
+    .custom-table {
+        margin: 50px auto;
+        width: 120%;
+    }
+    .image-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 20%;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-center">
+    <div class="container mt-5 text-center">
+        <h1 class="text-center mb-4 text-primary">
+            <i class="fas fa-list"></i> Liste des Départements
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if departements is empty %}
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle"></i> Aucun département trouvé.
+            </div>
+        {% else %}
+            <div class="d-flex justify-content-center mb-4">
+                <a href="{{ path('departement_add') }}" class="btn btn-success me-3">
+                    <i class="fas fa-plus-circle"></i> Ajouter un Département
+                </a>
+                <div class="input-group w-50 shadow-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un département...">
+                </div>
+                <div class="ms-3">
+                    <select id="sortBy" class="form-select shadow-sm">
+                        <option value="nom">Trier par Nom</option>
+                        <option value="adresse">Trier par Adresse</option>
+                       
+                    </select>
+                </div>
+                <div class="ms-3">
+                    <select id="sortOrder" class="form-select shadow-sm">
+                        <option value="asc">Ascendant</option>
+                        <option value="desc">Descendant</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered custom-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Adresse</th>
+                                    <th>Nombre d'Étages</th>
+                                    <th>Image</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="departementsList">
+                                {% for departement in departements %}
+                                    <tr class="departement-row" data-nom="{{ departement.nom|lower }}" data-adresse="{{ departement.adresse|lower }}" data-nbreetage="{{ departement.getNbreetage() }}">
+                                        <td>{{ departement.nom }}</td>
+                                        <td>{{ departement.adresse }}</td>
+                                        <td>{{ departement.getNbreetage() }}</td>
+                                        <td>
+                                            {% if departement.image %}
+                                                <img src="{{ asset(departement.image) }}" alt="Image" class="image-thumbnail" />
+                                            {% else %}
+                                                <span>Aucune image</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('departement_edit', {'id': departement.id}) }}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeletion('{{ path('departement_delete', {'id': departement.id}) }}', '{{ csrf_token('delete' ~ departement.id) }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                          <!-- Pagination -->
+                     <div class="pagination">
+    <a href="{{ path('departement_index', {page: current_page - 1}) }}" 
+       class="{% if current_page == 1 %}disabled{% endif %}">
+        &laquo; Précédent
+    </a>
+
+    {% for i in 1..max_page %}
+        <a href="{{ path('departement_index', {page: i}) }}" 
+           class="{% if i == current_page %}active{% endif %}">
+            {{ i }}
+        </a>
+    {% endfor %}
+
+    <a href="{{ path('departement_index', {page: current_page + 1}) }}" 
+       class="{% if current_page == max_page %}disabled{% endif %}">
+        Suivant &raquo;
+    </a>
+</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Recherche automatique
+    document.getElementById("searchInput").addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll(".departement-row");
+
+        rows.forEach(row => {
+            const nom = row.getAttribute("data-nom");
+            const adresse = row.getAttribute("data-adresse");
+            const nbreetage = row.getAttribute("data-nbreetage");
+
+            if (nom.includes(searchTerm) || adresse.includes(searchTerm) || nbreetage.includes(searchTerm)) {
+                row.style.display = "table-row";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    // Tri côté client
+    function sortTable(columnIndex, sortOrder) {
+        const rows = Array.from(document.querySelectorAll(".departement-row"));
+        const tbody = document.getElementById("departementsList");
+
+        rows.sort((a, b) => {
+            const aValue = a.children[columnIndex].textContent.toLowerCase();
+            const bValue = b.children[columnIndex].textContent.toLowerCase();
+
+            if (sortOrder === "asc") {
+                return aValue.localeCompare(bValue);
+            } else {
+                return bValue.localeCompare(aValue);
+            }
+        });
+
+        tbody.innerHTML = "";
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    document.getElementById("sortBy").addEventListener("change", function () {
+        const columnIndex = this.value === "nom" ? 0 : this.value === "adresse" ? 1 : 2;
+        const sortOrder = document.getElementById("sortOrder").value;
+        sortTable(columnIndex, sortOrder);
+    });
+
+    document.getElementById("sortOrder").addEventListener("change", function () {
+        const columnIndex = document.getElementById("sortBy").value === "nom" ? 0 : document.getElementById("sortBy").value === "adresse" ? 1 : 2;
+        const sortOrder = this.value;
+        sortTable(columnIndex, sortOrder);
+    });
+
+    // Confirmation de suppression
+    function confirmDeletion(deleteUrl, csrfToken) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: 'Vous ne pourrez pas revenir en arrière !',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+
+                const csrfField = document.createElement('input');
+                csrfField.type = 'hidden';
+                csrfField.name = '_token';
+                csrfField.value = csrfToken;
+                form.appendChild(csrfField);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.21/dist/sweetalert2.all.min.js"></script>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends '/departement/base.html.twig' %}
+
+{% block styles %}
+    <style>
+        .custom-table {
+            margin: 0 auto;
+            width: 80%;
+        }
+        .image-thumbnail {
+            width: 30px !important;
+            height: 30px !important;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+       .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        font-size: 16px;
+    }
+
+    .pagination a {
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+    }
+
+    .pagination a:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .pagination .disabled {
+        background-color: #ccc;
+        color: #666;
+        cursor: not-allowed;
+        border: 1px solid #ccc;
+    }
+
+    .pagination .active {
+        background-color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-center">
+    <div class="container mt-5 text-center">
+        <h1 class="text-center mb-4 text-primary">
+            <i class="fas fa-list"></i> Liste des Salles
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger text-center">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if salles is empty %}
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle"></i> Aucune salle trouvée.
+            </div>
+        {% else %}
+
+            <!-- Alignement corrigé des boutons et de la barre de recherche -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                <a href="{{ path('salle_add') }}" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Ajouter une Salle
+                </a>
+
+                <div class="input-group w-50 shadow-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher une salle...">
+                </div>
+
+                <a href="{{ path('salle_export') }}" class="btn btn-info">
+                    <i class="fas fa-file-download"></i> Exporter les Salles
+                </a>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover custom-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Capacité</th>
+                                    <th>Type</th>
+                                    <th>Étage</th>
+                                    <th>Image</th>
+                                    <th>Status</th>
+                                    <th>Priorité</th> {# Nouvelle colonne pour la priorité #}
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sallesList">
+                                {% for salle in salles %}
+                                    <tr class="salle-row">
+                                        <td>{{ salle.nom }}</td>
+                                        <td>{{ salle.capacite }}</td>
+                                        <td>{{ salle.typeSalle }}</td>
+                                        <td>{{ salle.etage ? salle.etage.Numero : 'Non défini' }}</td>
+                                        <td>
+                                            {% if salle.image %}
+                                                <img src="{{ asset(salle.image) }}" alt="Image" class="image-thumbnail" />
+                                            {% else %}
+                                                <span class="text-muted">Aucune image</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm 
+                                                {% if salle.status == 'Disponible' %}btn-success
+                                                {% elseif salle.status == 'Occupé' %}btn-warning
+                                                {% elseif salle.status == 'En maintenance' %}btn-danger
+                                                {% else %}btn-secondary{% endif %}" disabled>
+                                                {{ salle.status }}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            {{ salle.priorite }} {# Affichage de la priorité #}
+                                        </td>
+                                        <td>
+                                            {% if salle.status == 'Disponible' %}
+                                                <a href="{{ path('reservation_new', {'salleId': salle.id}) }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-calendar-plus"></i> 
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                    <i class="fas fa-ban"></i> Indisponible
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+    <a href="{{ path('salle_listmedecin', {page: current_page - 1}) }}" 
+       class="{% if current_page == 1 %}disabled{% endif %}">
+        &laquo; Précédent
+    </a>
+
+    {% for i in 1..max_page %}
+        <a href="{{ path('salle_listmedecin', {page: i}) }}" 
+           class="{% if i == current_page %}active{% endif %}">
+            {{ i }}
+        </a>
+    {% endfor %}
+
+    <a href="{{ path('salle_listmedecin", {page: current_page + 1}) }}" 
+       class="{% if current_page == max_page %}disabled{% endif %}">
+        Suivant &raquo;
+    </a>
+</div>
+
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script de recherche -->
+<script>
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll(".salle-row");
+
+        rows.forEach(row => {
+            let text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? "table-row" : "none";
+        });
+    });
+
+   
+    
+</script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.21/dist/sweetalert2.all.min.js"></script>
+
+
+{% endif %}
+
+{% endblock %}
