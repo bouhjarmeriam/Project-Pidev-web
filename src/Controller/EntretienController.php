@@ -8,6 +8,7 @@ use App\Form\EntretienType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EntretienRepository;
 use Knp\Snappy\Pdf;
+use App\Service\MailerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,38 +19,53 @@ class EntretienController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private Pdf $knpSnappyPdf;
+    private MailerService $mailerService;
 
-    public function __construct(EntityManagerInterface $entityManager, Pdf $knpSnappyPdf)
+    public function __construct(EntityManagerInterface $entityManager, Pdf $knpSnappyPdf, MailerService $mailerService)
     {
         $this->entityManager = $entityManager;
         $this->knpSnappyPdf = $knpSnappyPdf;
+        $this->mailerService = $mailerService;
     }
 
     #[Route('/create/{equipement_id}', name: 'create_entretien')]
     public function create(Request $request, int $equipement_id): Response
     {
+        // Récupérer l'équipement à partir de l'ID
         $equipement = $this->entityManager->getRepository(Equipement::class)->find($equipement_id);
 
         if (!$equipement) {
             throw $this->createNotFoundException('Équipement non trouvé.');
         }
 
+        // Créer un nouvel entretien pour l'équipement
         $entretien = new Entretien();
         $entretien->setEquipement($equipement);
         $entretien->setNomEquipement($equipement->getNom());
 
+        // Créer et gérer le formulaire
         $form = $this->createForm(EntretienType::class, $entretien);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persister l'entretien dans la base de données
             $this->entityManager->persist($entretien);
             $this->entityManager->flush();
 
+            // Ajouter un message flash pour la confirmation
             $this->addFlash('success', 'L\'entretien a été créé avec succès !');
 
+            // Envoyer une notification par email à l'admin
+            $this->mailerService->sendAdminNotification(
+                'Nouvel entretien créé',
+                '<p>Un nouvel entretien a été créé pour un équipement nommé : ' . $equipement->getNom() . '</p>'
+            );
+
+            // Rediriger vers la liste des entretiens
             return $this->redirectToRoute('entretien_list');
         }
 
+        // Afficher le formulaire de création
         return $this->render('entretien/create.html.twig', [
             'form' => $form->createView(),
         ]);
