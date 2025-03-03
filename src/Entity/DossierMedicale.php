@@ -52,6 +52,7 @@ class DossierMedicale
     public function __construct()
     {
         $this->sejours = new ArrayCollection();
+        $this->dateDeCreation = new \DateTime();
     }
 
     public function getId(): ?int
@@ -187,4 +188,4 @@ class DossierMedicale
         $this->medecin = $medecin;
         return $this;
     }
-} 
+}

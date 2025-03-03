@@ -10,6 +10,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ConsultationType extends AbstractType
 {
@@ -18,16 +23,49 @@ class ConsultationType extends AbstractType
         $builder
             ->add('service', EntityType::class, [
                 'class' => Service::class,
-                'choice_label' => 'name', // assuming 'name' is the field to be displayed
-                'label' => 'Choose a Service',
+                'choice_label' => 'name',
+                'label' => 'Service médical',
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez sélectionner un service']),
+                ],
                 'attr' => [
-                    'data-description' => $options['service_description'] ?? '', // Passing description
-                    'data-price' => $options['service_price'] ?? ''  // Passing price
+                    'class' => 'select-custom',
+                    'data-description' => $options['service_description'] ?? '',
+                    'data-price' => $options['service_price'] ?? ''
                 ],
             ])
-            ->add('date')
+            ->add('date', DateTimeType::class, [
+                'widget' => 'single_text',
+                'label' => 'Date et heure de consultation',
+                'constraints' => [
+                    new NotBlank(['message' => 'La date est requise']),
+                    new GreaterThanOrEqual([
+                        'value' => 'now',
+                        'message' => 'La date doit être future'
+                    ]),
+                ],
+            ])
             ->add('patientIdentifier', TextType::class, [
-                'label' => 'Patient Identifier', // Label for the patient identifier field
+                'label' => 'Identifiant du patient',
+                'constraints' => [
+                    new NotBlank(['message' => 'L\'identifiant du patient est requis']),
+                ],
+            ])
+            ->add('motif', TextareaType::class, [
+                'label' => 'Motif de la consultation',
+                'required' => false,
+            ])
+            ->add('priorite', ChoiceType::class, [
+                'label' => 'Niveau de priorité',
+                'choices' => [
+                    'Normal' => 'normal',
+                    'Urgent' => 'urgent',
+                    'Très urgent' => 'tres_urgent'
+                ],
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez sélectionner un niveau de priorité']),
+                ],
             ]);
     }
 
@@ -35,8 +73,9 @@ class ConsultationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Consultation::class,
-            'service_description' => '',  // Default value for description
-            'service_price' => '',  // Default value for price
+            'service_description' => '',
+            'service_price' => '',
+            'allow_extra_fields' => true,
         ]);
     }
 }

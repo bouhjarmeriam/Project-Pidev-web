@@ -1,0 +1,250 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des Événements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.css">
+    <style>
+        #calendar {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 800px;
+        }
+        .fc-event {
+            cursor: pointer;
+        }
+        #eventModal {
+            max-width: 500px;
+        }
+        .event-success {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .fc-toolbar-title {
+            font-size: 1.5em !important;
+        }
+        .fc-button {
+            background-color: #26a69a !important;
+            border-color: #26a69a !important;
+        }
+        .fc-button-active {
+            background-color: #00796b !important;
+            border-color: #00796b !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">
+                        <a href="{{ path('app_dossier_medicale_show', {'id': dossier.id}) }}" class="btn-floating btn-small waves-effect waves-light blue left" style="margin-right: 15px;">
+                            <i class="material-icons">arrow_back</i>
+                        </a>
+                        <span>
+                            <i class="material-icons" style="vertical-align: middle;">event</i>
+                            Calendrier des Événements - Dossier #{{ dossier.id }}
+                        </span>
+                    </div>
+                    <div id="successMessage" class="event-success"></div>
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour ajouter/éditer un événement -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <h4>Gérer un Événement</h4>
+        <form id="eventForm">
+            <div class="input-field">
+                <input type="text" id="eventTitle" required>
+                <label for="eventTitle">Titre de l'événement</label>
+            </div>
+            <div class="input-field">
+                <textarea id="eventDescription" class="materialize-textarea"></textarea>
+                <label for="eventDescription">Description</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="eventDate" class="datepicker" required>
+                <label for="eventDate">Date</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="eventTime" class="timepicker" required>
+                <label for="eventTime">Heure</label>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat">Annuler</a>
+        <a href="#!" class="waves-effect waves-green btn blue" id="saveEvent">Enregistrer</a>
+        <a href="#!" class="waves-effect waves-red btn red" id="deleteEvent" style="display:none;">Supprimer</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation des composants Materialize
+            var modal = M.Modal.init(document.getElementById('eventModal'), {
+                dismissible: false
+            });
+            var datepicker = M.Datepicker.init(document.querySelector('.datepicker'), {
+                format: 'yyyy-mm-dd',
+                defaultDate: new Date(),
+                setDefaultDate: true,
+                firstDay: 1,
+                i18n: {
+                    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                    monthsShort: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                    weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                    weekdaysAbbrev: ['D', 'L', 'M', 'M', 'J', 'V', 'S']
+                }
+            });
+            var timepicker = M.Timepicker.init(document.querySelector('.timepicker'), {
+                defaultTime: 'now',
+                twelveHour: false,
+                i18n: {
+                    cancel: 'Annuler',
+                    done: 'OK'
+                }
+            });
+
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                buttonText: {
+                    today: "Aujourd'hui",
+                    month: 'Mois',
+                    week: 'Semaine',
+                    day: 'Jour'
+                },
+                allDayText: 'Toute la journée',
+                firstDay: 1,
+                height: 'auto',
+                selectable: true,
+                selectMirror: true,
+                editable: true,
+                dayMaxEvents: true,
+                events: loadEvents(),
+                select: function(info) {
+                    document.getElementById('eventForm').reset();
+                    document.getElementById('eventDate').value = info.startStr;
+                    document.getElementById('deleteEvent').style.display = 'none';
+                    M.updateTextFields();
+                    modal.open();
+                },
+                eventClick: function(info) {
+                    document.getElementById('eventTitle').value = info.event.title;
+                    document.getElementById('eventDescription').value = info.event.extendedProps.description || '';
+                    document.getElementById('eventDate').value = info.event.startStr.split('T')[0];
+                    document.getElementById('eventTime').value = info.event.startStr.split('T')[1].substring(0, 5);
+                    document.getElementById('deleteEvent').style.display = 'inline-block';
+                    document.getElementById('deleteEvent').setAttribute('data-event-id', info.event.id);
+                    M.updateTextFields();
+                    modal.open();
+                }
+            });
+
+            calendar.render();
+
+            function loadEvents() {
+                var storageKey = 'medical_events_' + {{ dossier.id }};
+                var events = localStorage.getItem(storageKey);
+                return events ? JSON.parse(events) : [];
+            }
+
+            function saveEvents(events) {
+                var storageKey = 'medical_events_' + {{ dossier.id }};
+                localStorage.setItem(storageKey, JSON.stringify(events));
+            }
+
+            document.getElementById('saveEvent').addEventListener('click', function() {
+                var title = document.getElementById('eventTitle').value;
+                var description = document.getElementById('eventDescription').value;
+                var date = document.getElementById('eventDate').value;
+                var time = document.getElementById('eventTime').value;
+
+                if (!title || !date || !time) {
+                    M.toast({html: 'Veuillez remplir tous les champs requis', classes: 'red'});
+                    return;
+                }
+
+                var events = loadEvents();
+                var eventId = document.getElementById('deleteEvent').getAttribute('data-event-id');
+                
+                if (eventId) {
+                    // Modification d'un événement existant
+                    events = events.filter(function(event) {
+                        return event.id !== eventId;
+                    });
+                    var event = calendar.getEventById(eventId);
+                    if (event) {
+                        event.remove();
+                    }
+                }
+
+                var newEvent = {
+                    id: eventId || Date.now().toString(),
+                    title: title,
+                    description: description,
+                    start: date + 'T' + time,
+                    allDay: false
+                };
+
+                events.push(newEvent);
+                saveEvents(events);
+                calendar.addEvent(newEvent);
+                modal.close();
+
+                var successMessage = document.getElementById('successMessage');
+                successMessage.textContent = eventId ? 'Événement modifié avec succès!' : 'Événement ajouté avec succès!';
+                successMessage.style.display = 'block';
+                setTimeout(function() {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            });
+
+            document.getElementById('deleteEvent').addEventListener('click', function() {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+                    var eventId = this.getAttribute('data-event-id');
+                    var events = loadEvents().filter(function(event) {
+                        return event.id !== eventId;
+                    });
+                    
+                    saveEvents(events);
+                    var event = calendar.getEventById(eventId);
+                    if (event) {
+                        event.remove();
+                    }
+                    modal.close();
+                    M.toast({html: 'Événement supprimé avec succès', classes: 'green'});
+                }
+            });
+        });
+    </script>
+{% endblock %}

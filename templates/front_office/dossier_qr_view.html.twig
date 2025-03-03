@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier Médical - {{ dossier.patient.nomUser }} {{ dossier.patient.prenomUser }}</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #1a1a1a;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .medical-record {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .record-header {
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            color: white;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .record-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0h50v50H50zM0 50h50v50H0z' fill='rgba(255,255,255,0.1)' fill-rule='evenodd'/%3E%3C/svg%3E");
+            transform: rotate(30deg);
+            opacity: 0.1;
+        }
+
+        .record-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .record-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .record-body {
+            padding: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: #00b4d8;
+            box-shadow: 0 8px 16px rgba(0, 180, 216, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: #e0f7fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00b4d8;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0077b6;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .info-icon {
+            width: 42px;
+            height: 42px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00b4d8;
+            box-shadow: 0 4px 6px rgba(0, 180, 216, 0.1);
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin-top: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00b4d8;
+            border: 4px solid #e0f7fa;
+        }
+
+        .timeline-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #0077b6;
+            font-size: 1.1rem;
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline-description {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .doctor-profile {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .doctor-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 16px rgba(0, 180, 216, 0.2);
+        }
+
+        .doctor-info h3 {
+            color: #0077b6;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-info p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .record-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .record-title {
+                font-size: 1.8rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline {
+                padding-left: 2rem;
+            }
+
+            .timeline-item::before {
+                left: -2rem;
+            }
+
+            .doctor-profile {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .doctor-avatar {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="medical-record">
+            <div class="record-header">
+                <h1 class="record-title">
+                    <i class="material-icons">medical_information</i>
+                    Dossier Médical
+                </h1>
+                <p class="record-subtitle">{{ dossier.patient.nomUser }} {{ dossier.patient.prenomUser }}</p>
+            </div>
+
+            <div class="record-body">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="material-icons">person</i>
+                        </div>
+                        <h2 class="section-title">Informations du Patient</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">badge</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Nom Complet</div>
+                                <div class="info-value">{{ dossier.patient.nomUser }} {{ dossier.patient.prenomUser }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">cake</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Date de Naissance</div>
+                                <div class="info-value">{{ dossier.patient.dateNaissance|date('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">phone</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Téléphone</div>
+                                <div class="info-value">{{ dossier.patient.numTelephone }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">email</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ dossier.patient.email }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="material-icons">medical_services</i>
+                        </div>
+                        <h2 class="section-title">Détails Médicaux</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">event</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Date de Création</div>
+                                <div class="info-value">{{ dossier.dateDeCreation|date('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                        {% if dossier.diagnostic is defined and dossier.diagnostic %}
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="material-icons">description</i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Diagnostic</div>
+                                <div class="info-value">{{ dossier.diagnostic }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if dossier.notes is not empty %}
+                        <div class="notes">
+                            {{ dossier.notes }}
+                        </div>
+                    {% endif %}
+
+                    <div class="doctor-profile">
+                        <div class="doctor-avatar">
+                            <i class="material-icons">person</i>
+                        </div>
+                        <div class="doctor-info">
+                            <h3>Dr. {{ dossier.medecin.nomUser }} {{ dossier.medecin.prenomUser }}</h3>
+                            <p>Médecin Traitant</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

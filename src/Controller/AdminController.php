@@ -2,78 +2,51 @@
 
 namespace App\Controller;
 
-use App\Entity\Service;
-use App\Form\FormNameType; // Correct form type
-use App\Repository\ServiceRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'admin_home')]
-    public function index(): Response
+    #[Route('/', name: 'admin_home')]
+    public function dashboard(): Response
     {
         return $this->render('admin/dashboard.html.twig');
     }
 
-    #[Route('/admin/services', name: 'admin_services', methods: ['GET'])]
-    public function services(ServiceRepository $serviceRepository): Response
-    {
-        return $this->render('admin/services_list.html.twig', [
-            'services' => $serviceRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/admin/services/new', name: 'admin_service_new', methods: ['GET', 'POST'])]
-    public function newService(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $service = new Service();
-        $form = $this->createForm(FormNameType::class, $service); // Use FormNameType
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($service);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('admin_services');
-        }
-
-        return $this->render('admin/services_new.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/admin/users', name: 'admin_users')]
+    #[Route('/users', name: 'admin_users')]
     public function users(): Response
     {
+        // Placeholder for users management
         return $this->render('admin/users.html.twig');
     }
 
-    #[Route('/admin/equipment', name: 'admin_equipment')]
+    #[Route('/services', name: 'admin_services')]
+    public function services(): Response
+    {
+        // Placeholder for services management
+        return $this->render('admin/services.html.twig');
+    }
+
+    #[Route('/equipment', name: 'admin_equipment')]
     public function equipment(): Response
     {
+        // Placeholder for equipment management
         return $this->render('admin/equipment.html.twig');
     }
 
-    #[Route('/admin/infrastructure', name: 'admin_infrastructure')]
-    public function infrastructure(): Response
+    #[Route('/dossiers-medicaux', name: 'admin_dossiers_medicaux')]
+    public function dossiersMedicaux(): Response
     {
-        return $this->render('departement/add.html.twig');
+        // Redirect to the dossier medicale admin interface
+        return $this->redirectToRoute('admin_dossier_medicale_index');
     }
 
-    #[Route('/admin/medical-records', name: 'admin_medical_records')]
-    public function medicalRecords(): Response
-    {
-        return $this->render('admin/medical_records.html.twig');
-    }
-
-    #[Route('/admin/medication-stock', name: 'admin_medication_stock')]
+    #[Route('/medication-stock', name: 'admin_medication_stock')]
     public function medicationStock(): Response
     {
+        // Placeholder for medication stock management
         return $this->render('admin/medication_stock.html.twig');
     }
-}
+} 

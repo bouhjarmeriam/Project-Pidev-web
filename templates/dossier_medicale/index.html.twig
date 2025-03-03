@@ -4,6 +4,19 @@
 
 {% block body %}
 <div class="container">
+    {% if is_admin is defined and is_admin %}
+    <div class="row">
+        <div class="col s12">
+            <div class="admin-nav">
+                <a href="{{ path('admin_home') }}" class="btn waves-effect waves-light blue-grey">
+                    <i class="material-icons left">arrow_back</i>
+                    Retour au Dashboard Admin
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
     <div class="row">
         <div class="col s12">
             <div class="header-section">
@@ -84,18 +97,15 @@
                                             {{ dossier_medicale.statutDossier }}
                                         </span>
                                     </td>
-                                    <td class="actions-cell">
+                                    <td>
                                         <div class="action-buttons">
-                                            <a href="{{ path('app_dossier_medicale_show', {'id': dossier_medicale.id}) }}" 
-                                               class="btn-floating waves-effect waves-light blue tooltipped"
-                                               data-position="top"
-                                               data-tooltip="Voir les détails">
+                                            <a href="{{ path('app_dossier_medicale_show', {'id': dossier_medicale.id}) }}" class="btn-floating btn-small waves-effect waves-light blue tooltipped" data-position="top" data-tooltip="Voir les détails">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="{{ path('app_dossier_medicale_edit', {'id': dossier_medicale.id}) }}" 
-                                               class="btn-floating waves-effect waves-light orange tooltipped"
-                                               data-position="top"
-                                               data-tooltip="Modifier">
+                                            <a href="{{ path('app_dossier_medicale_calendar', {'id': dossier_medicale.id}) }}" class="btn-floating btn-small waves-effect waves-light green tooltipped" data-position="top" data-tooltip="Calendrier des événements">
+                                                <i class="material-icons">event</i>
+                                            </a>
+                                            <a href="{{ path('app_dossier_medicale_edit', {'id': dossier_medicale.id}) }}" class="btn-floating btn-small waves-effect waves-light orange tooltipped" data-position="top" data-tooltip="Modifier">
                                                 <i class="material-icons">edit</i>
                                             </a>
                                             <form method="post" action="{{ path('app_dossier_medicale_delete', {'id': dossier_medicale.id}) }}" style="display: inline-block" 
@@ -236,6 +246,19 @@
             font-size: 1rem;
             line-height: 30px;
         }
+    }
+
+    /* Admin navigation */
+    .admin-nav {
+        margin: 1rem 0;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .admin-nav .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 </style>
 

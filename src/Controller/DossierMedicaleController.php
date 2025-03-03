@@ -23,12 +23,17 @@ class DossierMedicaleController extends AbstractController
         ]);
     }
 
+    #[Route('/admin', name: 'admin_dossier_medicale_index', methods: ['GET'])]
+    public function adminIndex(DossierMedicaleRepository $dossierMedicaleRepository): Response
+    {
+        return $this->render('dossier_medicale/index.html.twig', [
+            'dossier_medicales' => $dossierMedicaleRepository->findAll(),
+            'is_admin' => true,
+        ]);
+    }
+
     #[Route('/new', name: 'app_dossier_medicale_new', methods: ['GET', 'POST'])]
-    public function new(
-        Request $request, 
-        EntityManagerInterface $entityManager,
-        SluggerInterface $slugger
-    ): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $dossierMedicale = new DossierMedicale();
         $form = $this->createForm(DossierMedicaleType::class, $dossierMedicale);
@@ -49,7 +54,6 @@ class DossierMedicaleController extends AbstractController
                     );
                     $dossierMedicale->setImage($newFilename);
                 } catch (\Exception $e) {
-                    // Handle the exception if something happens during file upload
                     $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de l\'image');
                 }
             }
@@ -67,6 +71,14 @@ class DossierMedicaleController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/calendar', name: 'app_dossier_medicale_calendar', methods: ['GET'])]
+    public function calendar(DossierMedicale $dossierMedicale): Response
+    {
+        return $this->render('dossier_medicale/calendar.html.twig', [
+            'dossier' => $dossierMedicale,
+        ]);
+    }
+
     #[Route('/{id}', name: 'app_dossier_medicale_show', methods: ['GET'])]
     public function show(DossierMedicale $dossierMedicale): Response
     {
@@ -76,12 +88,8 @@ class DossierMedicaleController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_dossier_medicale_edit', methods: ['GET', 'POST'])]
-    public function edit(
-        Request $request, 
-        DossierMedicale $dossierMedicale, 
-        EntityManagerInterface $entityManager,
-        SluggerInterface $slugger
-    ): Response {
+    public function edit(Request $request, DossierMedicale $dossierMedicale, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
         $form = $this->createForm(DossierMedicaleType::class, $dossierMedicale);
         $form->handleRequest($request);
 
@@ -94,14 +102,6 @@ class DossierMedicaleController extends AbstractController
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
                 try {
-                    // Delete old image if it exists
-                    if ($dossierMedicale->getImage()) {
-                        $oldImagePath = $this->getParameter('dossiers_directory').'/'.$dossierMedicale->getImage();
-                        if (file_exists($oldImagePath)) {
-                            unlink($oldImagePath);
-                        }
-                    }
-
                     $imageFile->move(
                         $this->getParameter('dossiers_directory'),
                         $newFilename
@@ -128,14 +128,6 @@ class DossierMedicaleController extends AbstractController
     public function delete(Request $request, DossierMedicale $dossierMedicale, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$dossierMedicale->getId(), $request->request->get('_token'))) {
-            // Delete the image file if it exists
-            if ($dossierMedicale->getImage()) {
-                $imagePath = $this->getParameter('dossiers_directory').'/'.$dossierMedicale->getImage();
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
-
             $entityManager->remove($dossierMedicale);
             $entityManager->flush();
             $this->addFlash('success', 'Le dossier médical a été supprimé avec succès.');
@@ -143,4 +135,4 @@ class DossierMedicaleController extends AbstractController
 
         return $this->redirectToRoute('app_dossier_medicale_index');
     }
-} 
+}

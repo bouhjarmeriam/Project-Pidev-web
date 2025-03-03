@@ -1,0 +1,150 @@
+ {% extends 'base.html.twig' %}
+
+{% block title %}{{ 'medical_services.title'|trans }}{% endblock %}
+
+{% block body %}
+<style>
+/* General Styling */
+body {
+    background: linear-gradient(to right, #004aad, #e63946, #ffffff);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Header Styling */
+.header-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+}
+
+/* Language Switcher */
+.language-switcher {
+    margin-top: 10px;
+}
+
+.language-switcher a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.language-switcher a:hover {
+    color: #ffdd57;
+}
+
+/* Card Styling */
+.card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    color: #333;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Image Container */
+.img-container {
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-bottom: 3px solid #e63946;
+}
+
+.img-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+/* Title Styling */
+.card-title {
+    font-weight: bold;
+    color: #004aad;
+}
+
+/* Description Styling */
+.card-text {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Layout Adjustments */
+.container {
+    max-width: 1200px;
+}
+</style>
+
+<div class="container mt-5">
+    <!-- Team Logo & Header -->
+    <div class="header-container">
+        <img src="{{ asset('imagesS/logo.png') }}" class="logo" alt="{{ 'medical_services.team_logo'|trans }}">
+        <h1 class="text-center mt-3">{{ 'medical_services.heading'|trans }}</h1>
+
+        <!-- Language Switcher -->
+        <div class="language-switcher text-center">
+          <a href="{{ path('medical_services_en') }}">🇺🇸 English</a> |
+<a href="{{ path('medical_services_fr') }}">🇫🇷 Français</a>
+
+
+        </div>
+    </div>
+
+    <!-- Display current locale -->
+    <p class="text-center mt-2">Current Locale: {{ app.request.locale }}</p>
+
+    <div class="row">
+        <!-- Radiology Service -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="img-container">
+                    <img src="https://images.pexels.com/photos/7088488/pexels-photo-7088488.jpeg" class="img-fluid" alt="{{ 'medical_services.radiology.alt'|trans }}">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ 'medical_services.radiology.title'|trans }}</h5>
+                    <p class="card-text">{{ 'medical_services.radiology.description'|trans }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DNA Testing -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="img-container">
+                    <img src="https://images.pexels.com/photos/7088485/pexels-photo-7088485.jpeg" class="img-fluid" alt="{{ 'medical_services.dna_testing.alt'|trans }}">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ 'medical_services.dna_testing.title'|trans }}</h5>
+                    <p class="card-text">{{ 'medical_services.dna_testing.description'|trans }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MRI Scans -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="img-container">
+                    <img src="https://images.pexels.com/photos/7088489/pexels-photo-7088489.jpeg" class="img-fluid" alt="{{ 'medical_services.mri_scans.alt'|trans }}">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ 'medical_services.mri_scans.title'|trans }}</h5>
+                    <p class="card-text">{{ 'medical_services.mri_scans.description'|trans }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

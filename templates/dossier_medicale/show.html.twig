@@ -2,6 +2,200 @@
 
 {% block title %}Détails du Dossier Médical{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .translation-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .translated-content {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .language-select {
+            margin-bottom: 15px;
+        }
+        
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .info-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .section-header {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-header i {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .section-header h5 {
+            color: white;
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .section-content p {
+            margin: 0.5rem 0;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .history-item h6 {
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-item p {
+            color: #4b5563;
+            margin: 0;
+            white-space: pre-line;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-warning {
+            background-color: #fff8e1;
+            color: #f57c00;
+        }
+
+        .status-success {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        /* Animation */
+        .animate-fade-up {
+            animation: fadeUp 0.5s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .header-actions .btn,
+            .header-actions .btn-flat {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .image-section {
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .image-section img {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .image-section img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     <div class="row">
@@ -124,186 +318,134 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">
+                        <a href="{{ path('app_dossier_medicale_index') }}" class="btn-floating btn-small waves-effect waves-light blue left" style="margin-right: 15px;">
+                            <i class="material-icons">arrow_back</i>
+                        </a>
+                        <span>Dossier Médical #{{ dossier_medicale.id }}</span>
+                    </div>
+
+                    <!-- Sélecteur de langue -->
+                    <div class="translation-section">
+                        <div class="language-select">
+                            <label>
+                                <i class="material-icons left">translate</i>
+                                Traduire vers :
+                            </label>
+                            <select id="languageSelect" class="browser-default">
+                                <option value="">Langue originale (Français)</option>
+                                <option value="en">🇬🇧 English</option>
+                                <option value="es">🇪🇸 Español</option>
+                                <option value="de">🇩🇪 Deutsch</option>
+                                <option value="it">🇮🇹 Italiano</option>
+                                <option value="ar">🇸🇦 العربية</option>
+                                <option value="zh">🇨🇳 中文</option>
+                                <option value="ja">🇯🇵 日本語</option>
+                                <option value="ru">🇷🇺 Русский</option>
+                                <option value="pt">🇵🇹 Português</option>
+                                <option value="hi">🇮🇳 हिन्दी</option>
+                            </select>
+                        </div>
+                        
+                        <div id="originalContent">
+                            <h5>Informations du Patient</h5>
+                            <p><strong>Nom:</strong> {{ dossier_medicale.patient.nomUser }} {{ dossier_medicale.patient.prenomUser }}</p>
+                            <p><strong>Date de naissance:</strong> {{ dossier_medicale.patient.dateNaissance ? dossier_medicale.patient.dateNaissance|date('d/m/Y') : 'Non spécifié' }}</p>
+                            
+                            <h5>Informations Médicales</h5>
+                            <p><strong>Médecin traitant:</strong> {{ dossier_medicale.medecin.nomUser }} {{ dossier_medicale.medecin.prenomUser }}</p>
+                            <p><strong>Date de création:</strong> {{ dossier_medicale.dateDeCreation ? dossier_medicale.dateDeCreation|date('d/m/Y') : '' }}</p>
+                            <p><strong>Statut:</strong> {{ dossier_medicale.statutDossier }}</p>
+                            {% if dossier_medicale.historiqueDesMaladies %}
+                            <p><strong>Historique des maladies:</strong> {{ dossier_medicale.historiqueDesMaladies }}</p>
+                            {% endif %}
+                            {% if dossier_medicale.operationsPassees %}
+                            <p><strong>Opérations passées:</strong> {{ dossier_medicale.operationsPassees }}</p>
+                            {% endif %}
+                            {% if dossier_medicale.consultationsPassees %}
+                            <p><strong>Consultations passées:</strong> {{ dossier_medicale.consultationsPassees }}</p>
+                            {% endif %}
+                            {% if dossier_medicale.notes %}
+                            <p><strong>Notes:</strong> {{ dossier_medicale.notes }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div id="translatedContent" class="translated-content" style="display: none;">
+                            <!-- Le contenu traduit sera inséré ici -->
+                        </div>
+                    </div>
+
+                    <div class="card-action">
+                        <a href="{{ path('app_dossier_medicale_edit', {'id': dossier_medicale.id}) }}" class="btn waves-effect waves-light orange">
+                            <i class="material-icons left">edit</i>
+                            Modifier
+                        </a>
+                        <a href="{{ path('app_dossier_medicale_calendar', {'id': dossier_medicale.id}) }}" class="btn waves-effect waves-light green">
+                            <i class="material-icons left">event</i>
+                            Calendrier
+                        </a>
+                        {{ include('dossier_medicale/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
-<style>
-    .header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 2rem 0;
-    }
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageSelect = document.getElementById('languageSelect');
+            const originalContent = document.getElementById('originalContent');
+            const translatedContent = document.getElementById('translatedContent');
+            const dossierId = {{ dossier_medicale.id }};
 
-    .header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin: 0;
-    }
+            languageSelect.addEventListener('change', async function() {
+                const targetLang = this.value;
+                if (!targetLang) {
+                    translatedContent.style.display = 'none';
+                    originalContent.style.display = 'block';
+                    return;
+                }
 
-    .header-actions {
-        display: flex;
-        gap: 1rem;
-    }
+                // Afficher un loader
+                M.toast({html: 'Traduction en cours...', classes: 'blue'});
+                translatedContent.innerHTML = '<div class="progress"><div class="indeterminate"></div></div>';
+                translatedContent.style.display = 'block';
 
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
+                try {
+                    const response = await fetch(`/api/translate/${targetLang}/${dossierId}`);
+                    const data = await response.json();
 
-    .info-section {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .info-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .info-section.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .section-header {
-        background: linear-gradient(to right, #3b82f6, #2563eb);
-        padding: 1rem 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .section-header i {
-        color: white;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-    }
-
-    .section-header h5 {
-        color: white;
-        margin: 0;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    .section-content {
-        padding: 1.5rem;
-    }
-
-    .section-content p {
-        margin: 0.5rem 0;
-    }
-
-    .history-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .history-item h6 {
-        color: #2563eb;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .history-item p {
-        color: #4b5563;
-        margin: 0;
-        white-space: pre-line;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-
-    .status-warning {
-        background-color: #fff8e1;
-        color: #f57c00;
-    }
-
-    .status-success {
-        background-color: #e8f5e9;
-        color: #388e3c;
-    }
-
-    /* Animation */
-    .animate-fade-up {
-        animation: fadeUp 0.5s ease-out;
-    }
-
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive adjustments */
-    @media screen and (max-width: 768px) {
-        .header-section {
-            flex-direction: column;
-            gap: 1rem;
-            text-align: center;
-        }
-
-        .header {
-            flex-direction: column;
-        }
-
-        .header-actions {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .header-actions .btn,
-        .header-actions .btn-flat {
-            width: 100%;
-            margin: 0.5rem 0;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .history-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .image-section {
-        margin: 1rem 0;
-        text-align: center;
-    }
-
-    .image-section img {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .image-section img:hover {
-        transform: scale(1.05);
-    }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.materialboxed');
-    M.Materialbox.init(elems);
-});
-</script>
-{% endblock %} 
+                    if (data.success) {
+                        translatedContent.innerHTML = data.translatedContent;
+                        translatedContent.style.display = 'block';
+                        originalContent.style.display = 'none';
+                        M.toast({html: 'Traduction terminée!', classes: 'green'});
+                    } else {
+                        throw new Error(data.message || 'Erreur de traduction');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    M.toast({html: 'Erreur lors de la traduction: ' + error.message, classes: 'red'});
+                    translatedContent.style.display = 'none';
+                    originalContent.style.display = 'block';
+                    languageSelect.value = '';
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.materialboxed');
+            M.Materialbox.init(elems);
+        });
+    </script>
+{% endblock %}

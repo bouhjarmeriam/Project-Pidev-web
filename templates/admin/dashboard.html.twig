@@ -18,8 +18,8 @@
                 <li><a href="{{ path('admin_users') }}"><i class="fas fa-users"></i> Users</a></li>
                 <li><a href="{{ path('admin_services') }}"><i class="fas fa-hospital"></i> Services</a></li>
                 <li><a href="{{ path('admin_equipment') }}"><i class="fas fa-tools"></i> Equipment</a></li>
-                <li><a href="{{ path('departement_index') }}"><i class="fas fa-building"></i> Infrastructure</a></li>
-                <li><a href="{{ path('app_dossier_medicale_index') }}"><i class="fas fa-folder-medical"></i> Dossiers Médicaux</a></li>
+                <li><a href="{{ path('admin_home') }}"><i class="fas fa-building"></i> Infrastructure</a></li>
+                <li><a href="{{ path('admin_dossiers_medicaux') }}"><i class="fas fa-folder-medical"></i> Dossiers Médicaux</a></li>
                 <li><a href="{{ path('admin_medication_stock') }}"><i class="fas fa-pills"></i> Medication Stock</a></li>
             </ul>
         </div>
@@ -60,15 +60,15 @@
                     </div>
                     <h3>Infrastructure</h3>
                     <p>Manage hospital infrastructure</p>
-                    <a href="{{ path('departement_index') }}" class="task-link">Go to Infrastructure</a>
+                    <a href="{{ path('admin_home') }}" class="task-link">Go to Infrastructure</a>
                 </div>
-                <div class="task-card" style="background-color: #003B5C; color: white;">
+                <div class="task-card" style="background-color: #003B5C; color: white; cursor: pointer;" onclick="window.location.href='{{ path('admin_dossiers_medicaux') }}'">
                     <div class="task-icon">
                         <i class="fas fa-folder-medical fa-2x"></i>
                     </div>
                     <h3>Dossiers Médicaux</h3>
                     <p>Manage patient medical records</p>
-                    <a href="{{ path('app_dossier_medicale_index') }}" class="task-link">Go to Medical Records</a>
+                    <a href="{{ path('admin_dossiers_medicaux') }}" class="task-link">Go to Medical Records</a>
                 </div>
                 <div class="task-card" style="background-color: #003B5C; color: white;">
                     <div class="task-icon">

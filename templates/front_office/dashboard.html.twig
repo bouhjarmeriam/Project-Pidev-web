@@ -2,6 +2,370 @@
 
 {% block title %}Mon Espace Patient{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .qr-code-container {
+            text-align: center;
+            padding: 1.5rem;
+            background: #ffffff;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .qr-code-title {
+            margin-bottom: 1.5rem;
+            color: #2196f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .qr-code-wrapper {
+            display: inline-block;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e3e8ef;
+            margin-bottom: 1rem;
+        }
+        
+        #qrcode {
+            margin: 0 auto;
+            min-height: 300px;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #qrcode canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn {
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn i {
+            margin: 0;
+        }
+        
+        /* Search styles */
+        .search-container {
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding-left: 3rem !important;
+            border-radius: 50px !important;
+            background-color: #f5f7fa !important;
+            box-shadow: none !important;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            color: #9e9e9e;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-results.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-item:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .search-result-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .search-result-icon.dossier { background-color: #2196f3; }
+        .search-result-icon.sejour { background-color: #ff9800; }
+        .search-result-icon.consultation { background-color: #4caf50; }
+        
+        .search-result-content {
+            flex: 1;
+        }
+        
+        .search-result-title {
+            font-weight: 500;
+            color: #212121;
+            margin-bottom: 0.25rem;
+        }
+        
+        .search-result-subtitle {
+            font-size: 0.875rem;
+            color: #757575;
+        }
+        
+        .search-result-highlight {
+            background-color: #fff9c4;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .search-empty {
+            padding: 2rem;
+            text-align: center;
+            color: #9e9e9e;
+        }
+        
+        .search-empty i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/kjua@0.9.0/dist/kjua.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrcodeContainer = document.getElementById('qrcode');
+            {% if dossiers is defined and dossiers is not empty %}
+            if (qrcodeContainer) {
+                // Clear any existing content
+                qrcodeContainer.innerHTML = '';
+                
+                // Create medical record data object
+                const medicalData = {
+                    dossier: {
+                        id: {{ dossiers[0].id }},
+                        dateCreation: '{{ dossiers[0].dateDeCreation|date("d/m/Y") }}',
+                        {% if dossiers[0].diagnostic is defined %}
+                        diagnostic: '{{ dossiers[0].diagnostic }}',
+                        {% endif %}
+                        patient: {
+                            nom: '{{ dossiers[0].patient.nomUser }}',
+                            prenom: '{{ dossiers[0].patient.prenomUser }}',
+                            dateNaissance: '{{ dossiers[0].patient.dateNaissance|date("d/m/Y") }}',
+                            telephone: '{{ dossiers[0].patient.numTelephone }}',
+                            email: '{{ dossiers[0].patient.email }}'
+                        },
+                        medecin: {
+                            nom: '{{ dossiers[0].medecin.nomUser }}',
+                            prenom: '{{ dossiers[0].medecin.prenomUser }}'
+                        }
+                        {% if dossiers[0].notes is not empty %},
+                        notes: {{ dossiers[0].notes|json_encode|raw }}
+                        {% endif %}
+                    }
+                };
+
+                // Create QR code with the medical data
+                const qr = kjua({
+                    text: JSON.stringify(medicalData),
+                    fill: '#2196f3',
+                    size: 300,
+                    back: '#ffffff',
+                    rounded: 100,
+                    quiet: 2,
+                    mode: 'plain',
+                    render: 'canvas',
+                    crisp: true,
+                    minVersion: 8,
+                    ecLevel: 'H'
+                });
+                
+                // Add the QR code to the container
+                qrcodeContainer.appendChild(qr);
+
+                // Add a download button
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'btn waves-effect waves-light blue';
+                downloadBtn.style.marginTop = '1rem';
+                downloadBtn.innerHTML = '<i class="material-icons left">file_download</i>Télécharger QR Code';
+                downloadBtn.onclick = function() {
+                    const canvas = qrcodeContainer.querySelector('canvas');
+                    const link = document.createElement('a');
+                    link.download = 'dossier-medical-{{ dossiers[0].id }}.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                };
+                qrcodeContainer.appendChild(downloadBtn);
+            }
+            {% endif %}
+            
+            // AJAX Search functionality
+            const searchInput = document.getElementById('patient-search');
+            const searchResults = document.getElementById('search-results');
+            let searchTimeout;
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    
+                    // Clear previous timeout
+                    clearTimeout(searchTimeout);
+                    
+                    // Hide results if query is empty
+                    if (query === '') {
+                        searchResults.classList.remove('active');
+                        return;
+                    }
+                    
+                    // Set a timeout to avoid making too many requests while typing
+                    searchTimeout = setTimeout(function() {
+                        // Make AJAX request
+                        fetch(`/api/patient/search?q=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Clear previous results
+                                searchResults.innerHTML = '';
+                                
+                                // Show results container
+                                searchResults.classList.add('active');
+                                
+                                if (data.results && data.results.length > 0) {
+                                    // Create and append result items
+                                    data.results.forEach(item => {
+                                        const resultItem = document.createElement('div');
+                                        resultItem.className = 'search-result-item';
+                                        
+                                        // Determine icon and color based on item type
+                                        let iconClass = 'folder';
+                                        let typeClass = 'dossier';
+                                        let url = '#';
+                                        
+                                        if (item.type === 'dossier') {
+                                            iconClass = 'folder';
+                                            typeClass = 'dossier';
+                                            url = `/dossier-medicale/${item.id}`;
+                                        } else if (item.type === 'sejour') {
+                                            iconClass = 'hotel';
+                                            typeClass = 'sejour';
+                                            url = `/sejour/${item.id}`;
+                                        } else if (item.type === 'consultation') {
+                                            iconClass = 'medical_services';
+                                            typeClass = 'consultation';
+                                            url = `/consultation/${item.id}`;
+                                        }
+                                        
+                                        // Highlight matching text
+                                        const highlightedTitle = item.title.replace(
+                                            new RegExp(query, 'gi'),
+                                            match => `<span class="search-result-highlight">${match}</span>`
+                                        );
+                                        
+                                        resultItem.innerHTML = `
+                                            <div class="search-result-icon ${typeClass}">
+                                                <i class="material-icons">${iconClass}</i>
+                                            </div>
+                                            <div class="search-result-content">
+                                                <div class="search-result-title">${highlightedTitle}</div>
+                                                <div class="search-result-subtitle">${item.subtitle}</div>
+                                            </div>
+                                        `;
+                                        
+                                        // Add click event to navigate to the item
+                                        resultItem.addEventListener('click', function() {
+                                            window.location.href = url;
+                                        });
+                                        
+                                        searchResults.appendChild(resultItem);
+                                    });
+                                } else {
+                                    // Show empty state
+                                    searchResults.innerHTML = `
+                                        <div class="search-empty">
+                                            <i class="material-icons">search_off</i>
+                                            <p>Aucun résultat trouvé pour "${query}"</p>
+                                        </div>
+                                    `;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Search error:', error);
+                                searchResults.innerHTML = `
+                                    <div class="search-empty">
+                                        <i class="material-icons">error_outline</i>
+                                        <p>Une erreur est survenue lors de la recherche</p>
+                                    </div>
+                                `;
+                                searchResults.classList.add('active');
+                            });
+                    }, 300); // 300ms delay
+                });
+                
+                // Close search results when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     <div class="row">
@@ -20,6 +384,19 @@
     </div>
 
     {% if user %}
+        <!-- Search Bar -->
+        <div class="row">
+            <div class="col s12">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <i class="material-icons search-icon">search</i>
+                        <input type="text" id="patient-search" class="search-input" placeholder="Rechercher dans vos dossiers, séjours, consultations...">
+                    </div>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Patient Information Card -->
         <div class="row">
             <div class="col s12">
@@ -51,6 +428,18 @@
                                 <span class="info-value">{{ user.dateNaissance|date('d/m/Y') }}</span>
                             </div>
                         </div>
+                        
+                        {% if dossiers is not empty %}
+                            <div class="qr-code-container">
+                                <div class="qr-code-title">
+                                    <i class="material-icons">qr_code_2</i>
+                                    <span>Scanner pour voir mon dossier médical</span>
+                                </div>
+                                <div class="qr-code-wrapper">
+                                    <div id="qrcode"></div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

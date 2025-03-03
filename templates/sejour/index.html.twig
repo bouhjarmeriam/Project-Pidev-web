@@ -18,6 +18,152 @@
         </div>
     </div>
 
+    <!-- Statistics Dashboard -->
+    <div class="row">
+        <!-- Key Metrics -->
+        <div class="col s12">
+            <div class="card animate-fade-up">
+                <div class="card-content">
+                    <span class="card-title">
+                        <i class="material-icons">insights</i>
+                        Statistiques des Séjours
+                    </span>
+                    
+                    <div class="stats-container">
+                        <!-- Total Stays -->
+                        <div class="stat-card blue lighten-1">
+                            <div class="stat-icon">
+                                <i class="material-icons">hotel</i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ stats.total }}</span>
+                                <span class="stat-label">Séjours Total</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Total Revenue -->
+                        <div class="stat-card green lighten-1">
+                            <div class="stat-icon">
+                                <i class="material-icons">payments</i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ stats.totalRevenue|number_format(0, ',', ' ') }} DT</span>
+                                <span class="stat-label">Revenus Total</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Average Stay Duration -->
+                        <div class="stat-card amber lighten-1">
+                            <div class="stat-icon">
+                                <i class="material-icons">schedule</i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ stats.averageStayDuration }} jours</span>
+                                <span class="stat-label">Durée Moyenne</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Current Month -->
+                        <div class="stat-card purple lighten-1">
+                            <div class="stat-icon">
+                                <i class="material-icons">date_range</i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ stats.currentMonth.count }}</span>
+                                <span class="stat-label">Séjours ce mois</span>
+                                <span class="stat-trend {% if stats.monthGrowth.count >= 0 %}positive{% else %}negative{% endif %}">
+                                    <i class="material-icons tiny">{% if stats.monthGrowth.count >= 0 %}trending_up{% else %}trending_down{% endif %}</i>
+                                    {{ stats.monthGrowth.count|abs }}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Distribution Charts -->
+                    <div class="row charts-row">
+                        <!-- Type Distribution -->
+                        <div class="col s12 m6">
+                            <div class="distribution-card">
+                                <h5>Types de Séjour</h5>
+                                <div class="distribution-bars">
+                                    {% for type, count in stats.typeDistribution %}
+                                        {% if stats.total > 0 %}
+                                            {% set percentage = (count / stats.total * 100)|round %}
+                                            <div class="distribution-item">
+                                                <div class="distribution-label">
+                                                    <span class="type-badge 
+                                                        {% if type == 'Hospitalisation' %}type-hospitalization
+                                                        {% elseif type == 'Consultation' %}type-consultation
+                                                        {% else %}type-emergency{% endif %}">
+                                                        <i class="material-icons tiny">
+                                                            {% if type == 'Hospitalisation' %}local_hotel
+                                                            {% elseif type == 'Consultation' %}medical_services
+                                                            {% else %}emergency{% endif %}
+                                                        </i>
+                                                        {{ type }}
+                                                    </span>
+                                                    <span class="distribution-count">{{ count }}</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="determinate 
+                                                        {% if type == 'Hospitalisation' %}orange lighten-1
+                                                        {% elseif type == 'Consultation' %}blue lighten-1
+                                                        {% else %}purple lighten-1{% endif %}" 
+                                                        style="width: {{ percentage }}%">
+                                                    </div>
+                                                </div>
+                                                <div class="distribution-percentage">{{ percentage }}%</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Status -->
+                        <div class="col s12 m6">
+                            <div class="distribution-card">
+                                <h5>Statut de Paiement</h5>
+                                <div class="distribution-bars">
+                                    {% for status, count in stats.paymentStatus %}
+                                        {% if stats.total > 0 %}
+                                            {% set percentage = (count / stats.total * 100)|round %}
+                                            <div class="distribution-item">
+                                                <div class="distribution-label">
+                                                    <span class="status-badge 
+                                                        {% if status == 'Payé' %}status-paid
+                                                        {% elseif status == 'En attente' %}status-pending
+                                                        {% else %}status-canceled{% endif %}">
+                                                        <i class="material-icons tiny">
+                                                            {% if status == 'Payé' %}check_circle
+                                                            {% elseif status == 'En attente' %}pending
+                                                            {% else %}cancel{% endif %}
+                                                        </i>
+                                                        {{ status }}
+                                                    </span>
+                                                    <span class="distribution-count">{{ count }}</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="determinate 
+                                                        {% if status == 'Payé' %}green lighten-1
+                                                        {% elseif status == 'En attente' %}amber lighten-1
+                                                        {% else %}red lighten-1{% endif %}" 
+                                                        style="width: {{ percentage }}%">
+                                                    </div>
+                                                </div>
+                                                <div class="distribution-percentage">{{ percentage }}%</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col s12">
             <div class="card animate-fade-up">
@@ -251,6 +397,186 @@
         .action-buttons .btn-floating i {
             font-size: 1rem;
             line-height: 30px;
+        }
+    }
+
+    /* Statistics Styles */
+    .stats-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        border-radius: 8px;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stat-icon {
+        background: rgba(255,255,255,0.2);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+
+    .stat-icon i {
+        font-size: 2rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .stat-trend.positive {
+        color: #a5d6a7;
+    }
+
+    .stat-trend.negative {
+        color: #ef9a9a;
+    }
+
+    /* Distribution Charts */
+    .charts-row {
+        margin-top: 2rem;
+    }
+
+    .distribution-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+
+    .distribution-card h5 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+        color: #424242;
+    }
+
+    .distribution-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .distribution-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .distribution-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .distribution-count {
+        font-weight: 600;
+        color: #616161;
+    }
+
+    .distribution-percentage {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #757575;
+    }
+
+    .progress {
+        height: 8px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0;
+    }
+
+    .determinate {
+        height: 100%;
+        border-radius: 4px;
+    }
+
+    /* Type badges */
+    .type-badge, .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .type-hospitalization {
+        background-color: #fff3e0;
+        color: #e65100;
+    }
+
+    .type-consultation {
+        background-color: #e1f5fe;
+        color: #0277bd;
+    }
+
+    .type-emergency {
+        background-color: #f3e5f5;
+        color: #7b1fa2;
+    }
+
+    .status-paid {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-pending {
+        background-color: #fff8e1;
+        color: #f57f17;
+    }
+
+    .status-canceled {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    /* Responsive adjustments for stats */
+    @media screen and (max-width: 992px) {
+        .stats-container {
+            flex-direction: column;
+        }
+        
+        .stat-card {
+            width: 100%;
         }
     }
 </style>

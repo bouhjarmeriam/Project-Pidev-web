@@ -53,4 +53,20 @@ class SejourRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    
+    /**
+     * Search for sejours by query string
+     */
+    public function searchByQuery(User $patient, string $query): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.dossierMedicale', 'd')
+            ->where('d.patient = :patient')
+            ->andWhere('s.id LIKE :query OR s.typeSejour LIKE :query OR s.moyenPaiement LIKE :query OR s.statutPaiement LIKE :query')
+            ->setParameter('patient', $patient)
+            ->setParameter('query', '%' . $query . '%')
+            ->orderBy('s.dateEntree', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 } 
