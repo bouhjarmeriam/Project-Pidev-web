@@ -52,10 +52,6 @@ class EntretienController extends AbstractController
             $this->entityManager->persist($entretien);
             $this->entityManager->flush();
 
-            // Mettre à jour le statut de l'équipement
-            $equipement->setStatut('En maintenance');
-            $this->entityManager->flush();
-
             // Ajouter un message flash pour la confirmation
             $this->addFlash('success', 'L\'entretien a été créé avec succès !');
 
@@ -68,6 +64,15 @@ class EntretienController extends AbstractController
                 '<p>Pour consulter la liste des entretiens, vous pouvez cliquer sur le lien suivant : <a href="' . $this->generateUrl('entretien_list', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL) . '">Voir la liste des entretiens</a></p>'
             );
 
+            // Attendre une minute (60 secondes)
+            sleep(60);
+
+            // Changer le statut de l'équipement en Fonctionnel après 1 minute
+            $equipement->setStatut('Fonctionnel'); // Assurez-vous que la méthode setStatus existe dans votre entité Equipement
+            $this->entityManager->flush();
+
+            // Ajouter un message flash pour informer de la mise à jour du statut
+            $this->addFlash('success', 'L\'équipement est maintenant marqué comme fonctionnel après l\'entretien.');
 
             // Rediriger vers la liste des entretiens
             return $this->redirectToRoute('entretien_list');
@@ -78,6 +83,7 @@ class EntretienController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/', name: 'entretien_list')]
     public function list(EntretienRepository $entretienRepository): Response
