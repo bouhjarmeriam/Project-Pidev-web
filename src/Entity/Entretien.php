@@ -32,35 +32,20 @@ class Entretien
     private ?string $descreption = null;
 
     #[ORM\Column(length: 200)]
-    private ?string $nom_equipement = null;
+    private ?string $nomEquipement = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Entretien')]
+    #[ORM\ManyToOne(targetEntity: Equipement::class, inversedBy: 'entretiens')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Equipement $equipement = null;
 
-    #[ORM\Column(type: "datetime")]
-    private ?\DateTimeInterface $createdAt = null;  // Ajout de la colonne created_at
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdAt = null;
 
-    // Constructeur pour initialiser la date de création
     public function __construct()
     {
-        $this->createdAt = new \DateTime();  // Valeur par défaut de created_at
+        $this->createdAt = new \DateTime(); // Initialisation par défaut de createdAt
     }
 
-    // Getter pour la propriété 'createdAt'
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    // Setter pour la propriété 'createdAt'
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    // Getters et Setters pour les autres propriétés
     public function getId(): ?int
     {
         return $this->id;
@@ -71,7 +56,7 @@ class Entretien
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
         return $this;
@@ -82,21 +67,20 @@ class Entretien
         return $this->descreption;
     }
 
-    public function setDescreption(string $descreption): static
+    public function setDescreption(string $descreption): self
     {
         $this->descreption = $descreption;
         return $this;
     }
 
-    // Getter pour 'nom_equipement'
     public function getNomEquipement(): ?string
     {
-        return $this->nom_equipement;
+        return $this->nomEquipement;
     }
 
-    public function setNomEquipement(string $nom_equipement): static
+    public function setNomEquipement(string $nomEquipement): self
     {
-        $this->nom_equipement = $nom_equipement;
+        $this->nomEquipement = $nomEquipement;
         return $this;
     }
 
@@ -105,12 +89,20 @@ class Entretien
         return $this->equipement;
     }
 
-    public function setEquipement(?Equipement $equipement): static
+    public function setEquipement(?Equipement $equipement): self
     {
         $this->equipement = $equipement;
         return $this;
     }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 }
-
-
-

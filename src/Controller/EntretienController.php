@@ -52,14 +52,22 @@ class EntretienController extends AbstractController
             $this->entityManager->persist($entretien);
             $this->entityManager->flush();
 
+            // Mettre à jour le statut de l'équipement
+            $equipement->setStatut('En maintenance');
+            $this->entityManager->flush();
+
             // Ajouter un message flash pour la confirmation
             $this->addFlash('success', 'L\'entretien a été créé avec succès !');
 
             // Envoyer une notification par email à l'admin
             $this->mailerService->sendAdminNotification(
                 'Nouvel entretien créé',
-                '<p>Un nouvel entretien a été créé pour un équipement nommé : ' . $equipement->getNom() . '</p>'
+                '<p>Un nouvel entretien a été créé pour l\'équipement suivant :</p>' .
+                '<p><strong>Nom de l\'équipement :</strong> ' . $equipement->getNom() . '</p>' .
+                '<p>Le statut de l\'équipement a été mis à jour en <strong>"En maintenance"</strong>.</p>' .
+                '<p>Pour consulter la liste des entretiens, vous pouvez cliquer sur le lien suivant : <a href="' . $this->generateUrl('entretien_list', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL) . '">Voir la liste des entretiens</a></p>'
             );
+
 
             // Rediriger vers la liste des entretiens
             return $this->redirectToRoute('entretien_list');

@@ -27,10 +27,10 @@ class EntretienType extends AbstractType
             ->add('descreption', TextType::class, [
                 'required' => true,
                 'constraints' => [
-                    new NotBlank(['message' => 'La description est obligatoire.']),
+                    new NotBlank(['message' => 'La descreption est obligatoire.']),
                     new Length([
                         'max' => 255,
-                        'maxMessage' => 'La description ne peut pas dépasser {{ limit }} caractères.',
+                        'maxMessage' => 'La descreption ne peut pas dépasser {{ limit }} caractères.',
                     ]),
                 ],
             ])

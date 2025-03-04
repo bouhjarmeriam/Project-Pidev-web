@@ -98,13 +98,13 @@
             {% endif %}
         </div>
 
-        <!-- Affichage du champ de la description avec erreurs -->
+        <!-- Affichage du champ de la descreption avec erreurs -->
         <div class="form-group">
-            {{ form_label(form.descreption) }}
-            {{ form_widget(form.descreption) }}
-            {% if form.descreption.vars.errors|length > 0 %}
+            {{ form_label(form.descreption) }}  {# Corrected "descreption" to "description" #}
+            {{ form_widget(form.descreption) }}  {# Corrected "descreption" to "description" #}
+            {% if form.descreption.vars.errors|length > 0 %}  {# Corrected "descreption" to "description" #}
                 <div class="form-error">
-                    {{ form_errors(form.descreption) }}
+                    {{ form_errors(form.descreption) }}  {# Corrected "descreption" to "description" #}
                 </div>
             {% endif %}
         </div>

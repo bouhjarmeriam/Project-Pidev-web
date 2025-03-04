@@ -1,5 +1,6 @@
 <?php
 
+// src/Entity/Equipement.php
 namespace App\Entity;
 
 use App\Repository\EquipementRepository;
@@ -30,12 +31,12 @@ class Equipement
     /**
      * @var Collection<int, Entretien>
      */
-    #[ORM\OneToMany(targetEntity: Entretien::class, mappedBy: 'equipement', orphanRemoval: true)]
-    private Collection $Entretien;
+    #[ORM\OneToMany(mappedBy: 'equipement', targetEntity: Entretien::class, orphanRemoval: true)]
+    private Collection $entretiens;
 
     public function __construct()
     {
-        $this->Entretien = new ArrayCollection();
+        $this->entretiens = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -48,10 +49,9 @@ class Equipement
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -60,10 +60,9 @@ class Equipement
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(string $type): self
     {
         $this->type = $type;
-
         return $this;
     }
 
@@ -72,10 +71,9 @@ class Equipement
         return $this->statut;
     }
 
-    public function setStatut(string $statut): static
+    public function setStatut(string $statut): self
     {
         $this->statut = $statut;
-
         return $this;
     }
 
@@ -84,40 +82,38 @@ class Equipement
         return $this->category;
     }
 
-    public function setCategory(string $category): static
+    public function setCategory(string $category): self
     {
         $this->category = $category;
-
         return $this;
     }
 
     /**
      * @return Collection<int, Entretien>
      */
-    public function getEntretien(): Collection
+    public function getEntretiens(): Collection
     {
-        return $this->Entretien;
+        return $this->entretiens;
     }
 
-    public function addEntretien(Entretien $entretien): static
+    public function addEntretien(Entretien $entretien): self
     {
-        if (!$this->Entretien->contains($entretien)) {
-            $this->Entretien->add($entretien);
+        if (!$this->entretiens->contains($entretien)) {
+            $this->entretiens->add($entretien);
             $entretien->setEquipement($this);
         }
-
         return $this;
     }
 
-    public function removeEntretien(Entretien $entretien): static
+    public function removeEntretien(Entretien $entretien): self
     {
-        if ($this->Entretien->removeElement($entretien)) {
+        if ($this->entretiens->removeElement($entretien)) {
             // set the owning side to null (unless already changed)
             if ($entretien->getEquipement() === $this) {
                 $entretien->setEquipement(null);
             }
         }
-
         return $this;
     }
 }
+
